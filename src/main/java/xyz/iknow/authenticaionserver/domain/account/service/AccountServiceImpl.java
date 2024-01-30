@@ -1,11 +1,13 @@
 package xyz.iknow.authenticaionserver.domain.account.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
+import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 
-import java.util.Optional;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -16,5 +18,23 @@ public class AccountServiceImpl implements AccountService {
     public Boolean validateEamil(String email) {
          Boolean result = accountRepository.existsByEmail(email);
         return result;
+    }
+
+    @Override
+    public ResponseEntity<Map> createAccount(AccountDTO request) {
+        String email = request.getEmail();
+        String password = request.getPassword();
+
+        if (accountRepository.existsByEmail(email)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "이미 가입된 이메일입니다."));
+        }
+
+        Account account = Account.builder()
+                .email(email)
+                .password(password)
+                .build();
+        accountRepository.save(account);
+
+        return ResponseEntity.ok().body(Map.of("message", "회원가입에 성공했습니다.", "status", "success"));
     }
 }
