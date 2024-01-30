@@ -9,4 +9,6 @@ public interface AccountService {
     Boolean validateEamil(String email);
 
     ResponseEntity<Map> createAccount(AccountDTO request);
+
+    ResponseEntity<Map> login(AccountDTO request);
 }

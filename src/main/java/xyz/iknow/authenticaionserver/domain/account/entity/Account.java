@@ -20,10 +20,12 @@ import lombok.NoArgsConstructor;
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @Getter
     private String email;
+    @Getter
     @JsonIgnore
     private String password;
 }

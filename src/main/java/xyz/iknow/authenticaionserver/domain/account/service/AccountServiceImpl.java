@@ -8,6 +8,7 @@ import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,5 +37,21 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
 
         return ResponseEntity.ok().body(Map.of("message", "회원가입에 성공했습니다.", "status", "success"));
+    }
+
+    @Override
+    public ResponseEntity<Map> login(AccountDTO request) {
+        String email = request.getEmail();
+        String password = request.getPassword();
+
+        Optional<Account> maybeAccount = accountRepository.findByEmailAndPassword(email, password);
+        if (maybeAccount.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "로그인에 실패하였습니다.", "status", "fail"));
+        }
+        Account account = maybeAccount.get();
+        System.out.println(account.getId());
+        return ResponseEntity.ok(Map.of("status", "success",
+                "accessToken", "Bearer accessToken"+account.getId(),
+                "refreshToken", "Bearer refreshToken"+account.getId()));
     }
 }
