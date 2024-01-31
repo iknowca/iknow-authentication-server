@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
+import xyz.iknow.authenticaionserver.utility.validator.EmailValidator;
 
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
     final private AccountRepository accountRepository;
+    final private EmailValidator emailValidator;
 
     @Override
     public Boolean validateEamil(String email) {
@@ -25,6 +27,11 @@ public class AccountServiceImpl implements AccountService {
     public ResponseEntity<Map> createAccount(AccountDTO request) {
         String email = request.getEmail();
         String password = request.getPassword();
+
+        if (!emailValidator.validate(email)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "이메일 형식이 올바르지 않습니다."));
+        }
+
 
         if (accountRepository.existsByEmail(email)) {
             return ResponseEntity.badRequest().body(Map.of("message", "이미 가입된 이메일입니다."));

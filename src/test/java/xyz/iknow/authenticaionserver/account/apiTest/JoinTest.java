@@ -70,10 +70,23 @@ public class JoinTest {
         resultActions.andExpect(jsonPath("$.message").value("이미 가입된 이메일입니다."));
     }
 
-//    TODO: 회원가입 제약 사항 추후 구현
-//    @Test
-//    @DisplayName("회원가입 실패 - 이메일 형식이 아님")
+    @Test
+    @DisplayName("회원가입 실패 - 이메일 형식이 아님")
+    public void testJoin3() throws Exception {
+        //given
+        String email = "test";
+        String password = "test1234";
+
+        //when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/account/join")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(AccountDTO.builder().email(email).password(password).build())));
+
+        //then
+        resultActions.andExpect(jsonPath("$.message").value("이메일 형식이 올바르지 않습니다."));
+    }
 //
+//    TODO: 회원가입 제약 사항 추후 구현
 //
 //    @Test
 //    @DisplayName("회원가입 실패 - 비밀번호 형식이 아님")
