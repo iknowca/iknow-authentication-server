@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
+import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository;
 
 import java.util.Optional;
 
@@ -30,6 +31,8 @@ public class LoginTest {
     private ObjectMapper objectMapper;
     @MockBean
     private AccountRepository accountRepository;
+    @MockBean
+    private TokenRepository tokenRepository;
 
     @Test
     @DisplayName("로그인 성공")
@@ -39,6 +42,7 @@ public class LoginTest {
         String password = "test1234";
         Long id = 1L;
         when(accountRepository.findByEmailAndPassword(email, password)).thenReturn(Optional.of(Account.builder().id(1L).email(email).password(password).build()));
+        when(tokenRepository.save(any())).thenReturn(null);
 
         //when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/account/login")
@@ -46,9 +50,11 @@ public class LoginTest {
                 .content(objectMapper.writeValueAsString(AccountDTO.builder().email(email).password(password).build())));
         //then
         verify(accountRepository, times(1)).findByEmailAndPassword(email, password);
+        verify(tokenRepository, times(2)).save(any());
         resultActions.andExpect(jsonPath("$.status").value("success"))
-                .andExpect(jsonPath("$.accessToken").value("Bearer accessToken"+1L))
-                .andExpect(jsonPath("$.refreshToken").value("Bearer refreshToken"+1L));
+                .andExpectAll(jsonPath("$.accessToken").exists(),
+                        jsonPath("$.refreshToken").exists())
+                .andDo(mvcResult -> System.out.println(mvcResult.getResponse().getContentAsString()));
     }
     @Test
     @DisplayName("로그인 실패 - 존재하지 않는 이메일")

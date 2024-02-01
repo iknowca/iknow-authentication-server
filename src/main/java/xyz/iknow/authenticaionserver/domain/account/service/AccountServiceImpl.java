@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
+import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.utility.validator.EmailValidator;
 
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class AccountServiceImpl implements AccountService {
     final private AccountRepository accountRepository;
     final private EmailValidator emailValidator;
+    final private JwtService jwtService;
 
     @Override
     public Boolean validateEamil(String email) {
@@ -56,9 +58,8 @@ public class AccountServiceImpl implements AccountService {
             return ResponseEntity.badRequest().body(Map.of("message", "로그인에 실패하였습니다.", "status", "fail"));
         }
         Account account = maybeAccount.get();
-        System.out.println(account.getId());
         return ResponseEntity.ok(Map.of("status", "success",
-                "accessToken", "Bearer accessToken"+account.getId(),
-                "refreshToken", "Bearer refreshToken"+account.getId()));
+                "accessToken", "Bearer " + jwtService.generateAccessToken(account.getId()),
+                "refreshToken", "Bearer " + jwtService.generateRefreshToken(account.getId())));
     }
 }
