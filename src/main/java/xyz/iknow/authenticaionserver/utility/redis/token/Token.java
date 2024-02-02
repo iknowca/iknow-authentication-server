@@ -17,8 +17,12 @@ import java.io.Serializable;
 public class Token implements Serializable {
     @Id
     private Long id;
-    private String prefix;
+    private TokenType type;
     private String jwt;
     @TimeToLive
     private Long expiration;
+    public enum TokenType {
+        ACCESS, REFRESH
+    }
+
 }

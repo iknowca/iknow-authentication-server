@@ -20,7 +20,7 @@ public class RedisTest {
     @DisplayName("토큰 저장 및 읽기 성공")
     public void testSaveAndFind() {
         //given
-        Token token = Token.builder().id(1L).prefix("test").jwt("test").expiration(3000L).build();
+        Token token = Token.builder().id(1L).type(Token.TokenType.ACCESS).jwt("test").expiration(3000L).build();
 
         //when
         tokenService.save(token);
@@ -33,7 +33,7 @@ public class RedisTest {
     @DisplayName("토큰 저장 성공 및 읽기 실패")
     public void testSaveAndFind2() {
         //given
-        Token token = Token.builder().id(2L).prefix("test").jwt("test").expiration(3000L).build();
+        Token token = Token.builder().id(2L).type(Token.TokenType.ACCESS).jwt("test").expiration(3000L).build();
 
         //when
         tokenService.save(token);

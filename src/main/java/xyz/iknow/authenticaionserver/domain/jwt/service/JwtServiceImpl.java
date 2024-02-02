@@ -22,14 +22,14 @@ public class JwtServiceImpl implements JwtService{
     public String generateAccessToken(Long accountId) {
         Map<String, Object> valueMap = Map.of("accountId", accountId);
         String accessToken = jwtUtility.generateToken(valueMap, accessTokenExpiration);
-        tokenService.save(new Token(accountId, "access", accessToken, accessTokenExpiration));
+        tokenService.save(new Token(accountId, Token.TokenType.ACCESS, accessToken, accessTokenExpiration));
         return accessToken;
     }
     @Override
     public String generateRefreshToken(Long accountId) {
         Map<String, Object> valueMap = Map.of("accountId", accountId);
         String refreshToken = jwtUtility.generateToken(valueMap, refreshTokenExpiration);
-        tokenService.save(new Token(accountId, "refresh", refreshToken, refreshTokenExpiration));
+        tokenService.save(new Token(accountId, Token.TokenType.REFRESH, refreshToken, refreshTokenExpiration));
         return refreshToken;
     }
     @Override
