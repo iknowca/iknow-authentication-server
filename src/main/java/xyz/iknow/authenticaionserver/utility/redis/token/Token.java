@@ -19,7 +19,6 @@ public class Token implements Serializable {
     private Long id;
     private TokenType type;
     private String jwt;
-    private String email;
     @TimeToLive
     private Long expiration;
     public enum TokenType {

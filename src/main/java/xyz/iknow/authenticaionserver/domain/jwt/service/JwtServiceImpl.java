@@ -21,14 +21,13 @@ public class JwtServiceImpl implements JwtService{
     private final TokenService tokenService;
     @Override
     public String generateAccessToken(Account account) {
-        Map<String, Object> valueMap = Map.of("accountId", account.getId(), "email", account.getEmail());
+        Map<String, Object> valueMap = Map.of("accountId", account.getId(), "email", account.getEmail(), "nickname", (account.getNickname() != null)?account.getEmail():"");
         String accessToken = jwtUtility.generateToken(valueMap, accessTokenExpiration);
         Token token =
                 Token.builder()
                         .id(account.getId())
                         .type(Token.TokenType.ACCESS)
                         .jwt(accessToken)
-                        .email(account.getEmail())
                         .expiration(accessTokenExpiration)
                         .build();
         tokenService.save(token);
@@ -36,14 +35,13 @@ public class JwtServiceImpl implements JwtService{
     }
     @Override
     public String generateRefreshToken(Account account) {
-        Map<String, Object> valueMap = Map.of("accountId", account.getId(), "email", account.getEmail());
+        Map<String, Object> valueMap = Map.of("accountId", account.getId(), "email", account.getEmail(), "nickname", (account.getNickname() != null)?account.getEmail():"");
         String refreshToken = jwtUtility.generateToken(valueMap, refreshTokenExpiration);
         Token token =
                 Token.builder()
                         .id(account.getId())
                         .type(Token.TokenType.REFRESH)
                         .jwt(refreshToken)
-                        .email(account.getEmail())
                         .expiration(accessTokenExpiration)
                         .build();
         tokenService.save(token);       return refreshToken;

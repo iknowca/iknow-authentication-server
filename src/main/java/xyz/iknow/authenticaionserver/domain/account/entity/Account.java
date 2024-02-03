@@ -2,10 +2,7 @@ package xyz.iknow.authenticaionserver.domain.account.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "account", uniqueConstraints = {
@@ -28,4 +25,7 @@ public class Account {
     @Getter
     @JsonIgnore
     private String password;
+    @Getter
+    @Setter
+    private String nickname;
 }
