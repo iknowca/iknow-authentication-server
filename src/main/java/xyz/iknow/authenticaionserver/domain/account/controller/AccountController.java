@@ -25,4 +25,8 @@ public class AccountController {
     public ResponseEntity<Map> login(@RequestBody AccountDTO request) {
         return accountService.login(request);
     }
+    @PostMapping("/refresh")
+    public ResponseEntity<Map> refresh(@RequestBody Map request) {
+        return accountService.refresh(request);
+    }
 }

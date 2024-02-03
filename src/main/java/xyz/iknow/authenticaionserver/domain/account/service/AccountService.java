@@ -11,4 +11,6 @@ public interface AccountService {
     ResponseEntity<Map> createAccount(AccountDTO request);
 
     ResponseEntity<Map> login(AccountDTO request);
+
+    ResponseEntity<Map> refresh(Map refreshToken);
 }

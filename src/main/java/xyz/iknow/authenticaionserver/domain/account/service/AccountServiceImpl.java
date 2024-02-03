@@ -7,6 +7,8 @@ import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
+import xyz.iknow.authenticaionserver.utility.redis.token.Token;
+import xyz.iknow.authenticaionserver.utility.redis.token.TokenService;
 import xyz.iknow.authenticaionserver.utility.validator.EmailValidator;
 
 import java.util.Map;
@@ -18,6 +20,7 @@ public class AccountServiceImpl implements AccountService {
     final private AccountRepository accountRepository;
     final private EmailValidator emailValidator;
     final private JwtService jwtService;
+    final private TokenService tokenService;
 
     @Override
     public Boolean validateEamil(String email) {
@@ -61,5 +64,29 @@ public class AccountServiceImpl implements AccountService {
         return ResponseEntity.ok(Map.of("status", "success",
                 "accessToken", "Bearer " + jwtService.generateAccessToken(account),
                 "refreshToken", "Bearer " + jwtService.generateRefreshToken(account)));
+    }
+
+    @Override
+    public ResponseEntity<Map> refresh(Map request) {
+        String refreshToken = (String) request.get("refreshToken");
+        Map<String, Object> values = jwtService.parseToken(refreshToken);
+        if (values == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "토큰이 유효하지 않습니다.", "status", "fail"));
+        }
+        Long accountId = (Long) values.get("accountId");
+
+        Token validToken = tokenService.findById(accountId);
+        if (validToken == null || !validToken.getJwt().equals(refreshToken)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "토큰이 유효하지 않습니다.", "status", "fail"));
+        }
+
+        Optional<Account> maybeAccount = accountRepository.findById(accountId);
+        if (maybeAccount.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "토큰이 유효하지 않습니다.", "status", "fail"));
+        }
+        Account account = maybeAccount.get();
+
+        return ResponseEntity.ok(Map.of("status", "success",
+                "accessToken", "Bearer " + jwtService.generateAccessToken(account)));
     }
 }
