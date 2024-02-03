@@ -59,7 +59,7 @@ public class AccountServiceImpl implements AccountService {
         }
         Account account = maybeAccount.get();
         return ResponseEntity.ok(Map.of("status", "success",
-                "accessToken", "Bearer " + jwtService.generateAccessToken(account.getId()),
-                "refreshToken", "Bearer " + jwtService.generateRefreshToken(account.getId())));
+                "accessToken", "Bearer " + jwtService.generateAccessToken(account),
+                "refreshToken", "Bearer " + jwtService.generateRefreshToken(account)));
     }
 }

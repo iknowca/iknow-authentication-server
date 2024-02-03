@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 
 import java.util.Map;
 
@@ -21,9 +22,11 @@ class JwtServiceTest {
     public void testGenerateToken() {
         //given
         Long id = 1L;
+        String email = "validEmail@test.com";
+        Account account = Account.builder().id(id).email(email).build();
         //when
-        String accessToken = jwtService.generateAccessToken(id);
-        String refreshToken = jwtService.generateRefreshToken(id);
+        String accessToken = jwtService.generateAccessToken(account);
+        String refreshToken = jwtService.generateRefreshToken(account);
 
         Map accessTokenValues = jwtService.parseToken(accessToken);
         Map refreshTokenValues = jwtService.parseToken(refreshToken);

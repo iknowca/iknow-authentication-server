@@ -1,11 +1,13 @@
 package xyz.iknow.authenticaionserver.domain.jwt.service;
 
+import xyz.iknow.authenticaionserver.domain.account.entity.Account;
+
 import java.util.Map;
 
 public interface JwtService {
-    String generateAccessToken(Long accountId);
+    String generateAccessToken(Account account);
 
-    String generateRefreshToken(Long accountId);
+    String generateRefreshToken(Account account);
 
     Map<String, Object> parseToken(String token);
 }

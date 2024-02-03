@@ -3,6 +3,7 @@ package xyz.iknow.authenticaionserver.domain.jwt.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.utility.jwt.JwtUtility;
 import xyz.iknow.authenticaionserver.utility.redis.token.Token;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenService;
@@ -19,18 +20,33 @@ public class JwtServiceImpl implements JwtService{
     private final JwtUtility jwtUtility;
     private final TokenService tokenService;
     @Override
-    public String generateAccessToken(Long accountId) {
-        Map<String, Object> valueMap = Map.of("accountId", accountId);
+    public String generateAccessToken(Account account) {
+        Map<String, Object> valueMap = Map.of("accountId", account.getId(), "email", account.getEmail());
         String accessToken = jwtUtility.generateToken(valueMap, accessTokenExpiration);
-        tokenService.save(new Token(accountId, Token.TokenType.ACCESS, accessToken, accessTokenExpiration));
+        Token token =
+                Token.builder()
+                        .id(account.getId())
+                        .type(Token.TokenType.ACCESS)
+                        .jwt(accessToken)
+                        .email(account.getEmail())
+                        .expiration(accessTokenExpiration)
+                        .build();
+        tokenService.save(token);
         return accessToken;
     }
     @Override
-    public String generateRefreshToken(Long accountId) {
-        Map<String, Object> valueMap = Map.of("accountId", accountId);
+    public String generateRefreshToken(Account account) {
+        Map<String, Object> valueMap = Map.of("accountId", account.getId(), "email", account.getEmail());
         String refreshToken = jwtUtility.generateToken(valueMap, refreshTokenExpiration);
-        tokenService.save(new Token(accountId, Token.TokenType.REFRESH, refreshToken, refreshTokenExpiration));
-        return refreshToken;
+        Token token =
+                Token.builder()
+                        .id(account.getId())
+                        .type(Token.TokenType.REFRESH)
+                        .jwt(refreshToken)
+                        .email(account.getEmail())
+                        .expiration(accessTokenExpiration)
+                        .build();
+        tokenService.save(token);       return refreshToken;
     }
     @Override
     public Map<String, Object> parseToken(String token) {
