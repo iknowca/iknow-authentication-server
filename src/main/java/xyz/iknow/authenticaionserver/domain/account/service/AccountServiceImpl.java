@@ -7,8 +7,8 @@ import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
-import xyz.iknow.authenticaionserver.utility.redis.token.Token;
-import xyz.iknow.authenticaionserver.utility.redis.token.TokenService;
+import xyz.iknow.authenticaionserver.utility.redis.token.TokenService.TokenService;
+import xyz.iknow.authenticaionserver.utility.redis.token.token.RefreshToken;
 import xyz.iknow.authenticaionserver.utility.validator.EmailValidator;
 
 import java.util.Map;
@@ -75,8 +75,8 @@ public class AccountServiceImpl implements AccountService {
         }
         Long accountId = (Long) values.get("accountId");
 
-        Token validToken = tokenService.findById(accountId);
-        if (validToken == null || !validToken.getJwt().equals(refreshToken)) {
+        Optional<RefreshToken> validToken = tokenService.findRefreshTokenById(accountId);
+        if (validToken.isEmpty() || !validToken.get().getJwt().equals(refreshToken.substring(7))) {
             return ResponseEntity.badRequest().body(Map.of("message", "토큰이 유효하지 않습니다.", "status", "fail"));
         }
 

@@ -29,14 +29,14 @@ public class JwtUtility {
                 .setClaims(payloads)
                 .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
                 .setExpiration(Date.from(ZonedDateTime.now().plusSeconds(expiration).toInstant()))
-                .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, secret)
+                .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, secret.getBytes())
                 .compact();
         return jwtStr;
     }
 
     public Map<String, Object> parseToken(String token) {
         Map<String, Object> claims = Jwts.parser()
-                .setSigningKey(secret)
+                .setSigningKey(secret.getBytes())
                 .parseClaimsJws(token)
                 .getBody();
         return claims;

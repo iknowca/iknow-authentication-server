@@ -1,28 +1,25 @@
-package xyz.iknow.authenticaionserver.utility.redis.token;
+package xyz.iknow.authenticaionserver.utility.redis.token.token;
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 import java.io.Serializable;
 
-@RedisHash("Token")
+@RedisHash("refresh_token")
 @NoArgsConstructor
 @AllArgsConstructor
-@lombok.Data
+@Data
 @Builder
-public class Token implements Serializable {
+public class RefreshToken {
+
     @Id
     private Long id;
-    private TokenType type;
     private String jwt;
     @TimeToLive
     private Long expiration;
-    public enum TokenType {
-        ACCESS, REFRESH
-    }
-
 }

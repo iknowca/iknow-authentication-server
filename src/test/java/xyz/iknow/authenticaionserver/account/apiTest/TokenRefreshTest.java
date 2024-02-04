@@ -13,12 +13,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
-import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 import xyz.iknow.authenticaionserver.domain.account.service.AccountService;
 import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
-import xyz.iknow.authenticaionserver.utility.redis.token.Token;
-import xyz.iknow.authenticaionserver.utility.redis.token.TokenService;
+import xyz.iknow.authenticaionserver.utility.redis.token.TokenService.TokenService;
+import xyz.iknow.authenticaionserver.utility.redis.token.token.RefreshToken;
 
 import java.util.Map;
 import java.util.Optional;
@@ -47,14 +46,14 @@ public class TokenRefreshTest {
     @DisplayName("토큰 리프레쉬 성공")
     public void testRefreshToken() throws Exception {
         //given
-        String refreshToken = "validRefreshToken";
+        String refreshToken = "Bearer validRefreshToken";
         Long id = 1L;
         String email = "validEmail";
         Account account = Account.builder().id(id).email(email).build();
         String accessToken = "validAccessToken";
 
         when(jwtservice.parseToken(refreshToken)).thenReturn(Map.of("accountId", id));
-        when(tokenService.findById(1L)).thenReturn(new Token(1L, null, refreshToken, null));
+        when(tokenService.findRefreshTokenById(1L)).thenReturn(Optional.of(new RefreshToken(id, refreshToken.substring(7), 1000L)));
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
         when(jwtservice.generateAccessToken(account)).thenReturn("validAccessToken");
         //when

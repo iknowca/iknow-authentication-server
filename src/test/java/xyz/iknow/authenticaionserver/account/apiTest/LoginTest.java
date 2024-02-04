@@ -14,7 +14,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
-import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository;
+import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository.AccessTokenRepository;
+import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository.RefreshTokenRepository;
 
 import java.util.Optional;
 
@@ -32,7 +33,9 @@ public class LoginTest {
     @MockBean
     private AccountRepository accountRepository;
     @MockBean
-    private TokenRepository tokenRepository;
+    private AccessTokenRepository accessTokenRepository;
+    @MockBean
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Test
     @DisplayName("로그인 성공")
@@ -42,7 +45,8 @@ public class LoginTest {
         String password = "test1234";
         Long id = 1L;
         when(accountRepository.findByEmailAndPassword(email, password)).thenReturn(Optional.of(Account.builder().id(1L).email(email).password(password).build()));
-        when(tokenRepository.save(any())).thenReturn(null);
+        when(accessTokenRepository.save(any())).thenReturn(null);
+        when(refreshTokenRepository.save(any())).thenReturn(null);
 
         //when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/account/login")
@@ -50,7 +54,8 @@ public class LoginTest {
                 .content(objectMapper.writeValueAsString(AccountDTO.builder().email(email).password(password).build())));
         //then
         verify(accountRepository, times(1)).findByEmailAndPassword(email, password);
-        verify(tokenRepository, times(2)).save(any());
+        verify(accessTokenRepository, times(1)).save(any());
+        verify(refreshTokenRepository, times(1)).save(any());
         resultActions.andExpect(jsonPath("$.status").value("success"))
                 .andExpectAll(jsonPath("$.accessToken").exists(),
                         jsonPath("$.refreshToken").exists())
