@@ -2,12 +2,14 @@ package xyz.iknow.authenticaionserver.domain.account.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenService.TokenService;
+import xyz.iknow.authenticaionserver.utility.redis.token.token.AccessToken;
 import xyz.iknow.authenticaionserver.utility.redis.token.token.RefreshToken;
 import xyz.iknow.authenticaionserver.utility.validator.EmailValidator;
 
@@ -21,6 +23,7 @@ public class AccountServiceImpl implements AccountService {
     final private EmailValidator emailValidator;
     final private JwtService jwtService;
     final private TokenService tokenService;
+    final private BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public Boolean validateEamil(String email) {
@@ -44,26 +47,11 @@ public class AccountServiceImpl implements AccountService {
 
         Account account = Account.builder()
                 .email(email)
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .build();
         accountRepository.save(account);
 
         return ResponseEntity.ok().body(Map.of("message", "회원가입에 성공했습니다.", "status", "success"));
-    }
-
-    @Override
-    public ResponseEntity<Map> login(AccountDTO request) {
-        String email = request.getEmail();
-        String password = request.getPassword();
-
-        Optional<Account> maybeAccount = accountRepository.findByEmailAndPassword(email, password);
-        if (maybeAccount.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("message", "로그인에 실패하였습니다.", "status", "fail"));
-        }
-        Account account = maybeAccount.get();
-        return ResponseEntity.ok(Map.of("status", "success",
-                "accessToken", "Bearer " + jwtService.generateAccessToken(account),
-                "refreshToken", "Bearer " + jwtService.generateRefreshToken(account)));
     }
 
     @Override
@@ -88,5 +76,31 @@ public class AccountServiceImpl implements AccountService {
 
         return ResponseEntity.ok(Map.of("status", "success",
                 "accessToken", "Bearer " + jwtService.generateAccessToken(account)));
+    }
+
+    @Override
+    public ResponseEntity<AccountDTO> getMyInfo(String token) {
+        Map<String, Object> values = jwtService.parseToken(token);
+        if (values == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Long accountId = ((Integer) values.get("accountId")).longValue();
+
+        Optional<AccessToken> validToken = tokenService.findAccessTokenById(accountId);
+        if (validToken.isEmpty() || !validToken.get().getJwt().equals(token.substring(7))) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<Account> maybeAccount = accountRepository.findById(accountId);
+        if (maybeAccount.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        Account account = maybeAccount.get();
+        return ResponseEntity.ok(AccountDTO.builder()
+                .id(account.getId())
+                .email(account.getEmail())
+                .nickname(account.getNickname())
+                .build());
     }
 }

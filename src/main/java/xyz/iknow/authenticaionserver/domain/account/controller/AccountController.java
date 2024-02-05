@@ -21,12 +21,17 @@ public class AccountController {
     public ResponseEntity<Map> join(@RequestBody AccountDTO request) {
         return accountService.createAccount(request);
     }
-    @PostMapping("/login")
-    public ResponseEntity<Map> login(@RequestBody AccountDTO request) {
-        return accountService.login(request);
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<Map> login(@RequestBody AccountDTO request) {
+//        return accountService.login(request);
+//    }
     @PostMapping("/refresh")
     public ResponseEntity<Map> refresh(@RequestBody Map request) {
         return accountService.refresh(request);
     }
+
+    @GetMapping("/my-info")
+    public ResponseEntity<AccountDTO> getMyInfo(@RequestHeader("Authorization") String token) {
+        return accountService.getMyInfo(token);
+}
 }
