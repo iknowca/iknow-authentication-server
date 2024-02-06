@@ -34,7 +34,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
             return;
         }
         try {
-            Map<String, Object> jwtValueMap = jwtService.parseToken(token);
+            Map<String, Object> jwtValueMap = jwtService.parseToken(token.substring(7));
             String email = (String) jwtValueMap.get("email");
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

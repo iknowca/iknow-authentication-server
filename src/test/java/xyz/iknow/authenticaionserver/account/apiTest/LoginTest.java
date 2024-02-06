@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
+import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository.AccessTokenRepository;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository.RefreshTokenRepository;
 
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
@@ -43,6 +45,8 @@ public class LoginTest {
     private RefreshTokenRepository refreshTokenRepository;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    @MockBean
+    private JwtService jwtService;
 
     @Test
     @DisplayName("로그인 성공")
@@ -52,11 +56,14 @@ public class LoginTest {
         String password = "1234";
         System.out.println(password);
 
+        String accessToken = "validAccessToken";
+        String refreshToken = "validRefreshToken";
+
 
         Long id = 2L;
         when(accountRepository.findByEmail(email)).thenReturn(Optional.of(Account.builder().id(id).email(email).password(passwordEncoder.encode(password)).build()));
-        when(accessTokenRepository.save(any())).thenReturn(null);
-        when(refreshTokenRepository.save(any())).thenReturn(null);
+        when(jwtService.generateRefreshToken(any())).thenReturn(refreshToken);
+        when(jwtService.generateAccessToken(any())).thenReturn(accessToken);
 
         //when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/account/login")
@@ -64,10 +71,10 @@ public class LoginTest {
                 .content(objectMapper.writeValueAsString(Map.of("email", email, "password", password))));
         //then
         verify(accountRepository, times(1)).findByEmail(email);
-        verify(accessTokenRepository, times(1)).save(any());
-        verify(refreshTokenRepository, times(1)).save(any());
-        resultActions.andExpectAll(jsonPath("$.accessToken").exists(),
-                        jsonPath("$.refreshToken").exists());
+        verify(jwtService, times(1)).generateAccessToken(any());
+        verify(jwtService, times(1)).generateRefreshToken(any());
+        resultActions.andExpectAll(jsonPath("$.accessToken").exists());
+        resultActions.andExpect(cookie().value("refreshToken", "validRefreshToken"));
     }
     @Test
     @DisplayName("로그인 실패 - 존재하지 않는 이메일")

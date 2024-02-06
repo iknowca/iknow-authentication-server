@@ -56,16 +56,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public ResponseEntity<Map> refresh(Map request) {
-        String refreshToken = (String) request.get("refreshToken");
+    public ResponseEntity<Map> refresh(String refreshToken) {
         Map<String, Object> values = jwtService.parseToken(refreshToken);
         if (values == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "토큰이 유효하지 않습니다.", "status", "fail"));
         }
-        Long accountId = (Long) values.get("accountId");
+        Long accountId = ((Integer) values.get("accountId")).longValue();
 
         Optional<RefreshToken> validToken = tokenService.findRefreshTokenById(accountId);
-        if (validToken.isEmpty() || !validToken.get().getJwt().equals(refreshToken.substring(7))) {
+        if (validToken.isEmpty() || !validToken.get().getJwt().equals(refreshToken)) {
             return ResponseEntity.badRequest().body(Map.of("message", "토큰이 유효하지 않습니다.", "status", "fail"));
         }
 

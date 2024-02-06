@@ -1,6 +1,7 @@
 package xyz.iknow.authenticaionserver.account.apiTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,20 +47,20 @@ public class TokenRefreshTest {
     @DisplayName("토큰 리프레쉬 성공")
     public void testRefreshToken() throws Exception {
         //given
-        String refreshToken = "Bearer validRefreshToken";
+        String refreshToken = "validRefreshToken";
         Long id = 1L;
         String email = "validEmail";
         Account account = Account.builder().id(id).email(email).build();
         String accessToken = "validAccessToken";
 
-        when(jwtservice.parseToken(refreshToken)).thenReturn(Map.of("accountId", id));
-        when(tokenService.findRefreshTokenById(1L)).thenReturn(Optional.of(new RefreshToken(id, refreshToken.substring(7), 1000L)));
+        when(jwtservice.parseToken(refreshToken)).thenReturn(Map.of("accountId", id.intValue()));
+        when(tokenService.findRefreshTokenById(1L)).thenReturn(Optional.of(new RefreshToken(id, refreshToken, 1000L)));
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
         when(jwtservice.generateAccessToken(account)).thenReturn("validAccessToken");
         //when
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/account/refresh")
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/account/refresh")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("refreshToken", refreshToken))));
+                .cookie(new Cookie("refreshToken", refreshToken)));
         //then
         resultActions.andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken").value("Bearer validAccessToken"))

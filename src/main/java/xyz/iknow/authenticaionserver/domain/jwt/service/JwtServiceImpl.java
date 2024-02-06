@@ -46,7 +46,6 @@ public class JwtServiceImpl implements JwtService{
     }
     @Override
     public Map<String, Object> parseToken(String token) {
-        token = token.substring(7);
         return jwtUtility.parseToken(token);
     }
 }

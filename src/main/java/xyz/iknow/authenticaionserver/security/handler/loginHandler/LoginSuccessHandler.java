@@ -2,6 +2,7 @@ package xyz.iknow.authenticaionserver.security.handler.loginHandler;
 
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +29,15 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtService.generateAccessToken(account);
         String refreshToken = jwtService.generateRefreshToken(account);
 
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         Gson gson = new Gson();
-        String jsonStr = gson.toJson(Map.of("accessToken", "Bearer " + accessToken, "refreshToken", "Bearer " + refreshToken));
+        String jsonStr = gson.toJson(Map.of("accessToken", "Bearer " + accessToken));
 
         out.write(jsonStr);
         out.flush();
