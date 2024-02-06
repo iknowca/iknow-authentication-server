@@ -31,7 +31,7 @@ public class AccountController {
     }
 
     @GetMapping("/my-info")
-    public ResponseEntity<AccountDTO> getMyInfo(@RequestHeader("Authorization") String token) {
-        return accountService.getMyInfo(token);
+    public ResponseEntity<AccountDTO> getMyInfo() {
+        return accountService.getMyInfo();
 }
 }

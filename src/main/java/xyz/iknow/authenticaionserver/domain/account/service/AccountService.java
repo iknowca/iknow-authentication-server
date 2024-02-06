@@ -12,5 +12,5 @@ public interface AccountService {
 
     ResponseEntity<Map> refresh(Map refreshToken);
 
-    ResponseEntity<AccountDTO> getMyInfo(String token);
+    ResponseEntity<AccountDTO> getMyInfo();
 }

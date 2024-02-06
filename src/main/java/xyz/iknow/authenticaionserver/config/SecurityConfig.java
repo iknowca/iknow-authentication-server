@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.security.customFilter.LoginFilter;
+import xyz.iknow.authenticaionserver.security.customFilter.TokenCheckFilter;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetailsService;
 import xyz.iknow.authenticaionserver.security.handler.loginHandler.LoginFailureHandler;
 import xyz.iknow.authenticaionserver.security.handler.loginHandler.LoginSuccessHandler;
@@ -33,8 +34,11 @@ public class SecurityConfig {
 
             http.authenticationManager(buildCustomAuthenticationManager(http));
             http.addFilterBefore(loginFilter(buildCustomAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class);
+            http.addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class);
 
-
+            http.authorizeRequests(authorizeRequests ->
+                    authorizeRequests.requestMatchers("/account/my-info").authenticated()
+            );
             return http.build();
     }
 
@@ -52,6 +56,11 @@ public class SecurityConfig {
         loginFilter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtService));
         loginFilter.setAuthenticationFailureHandler(new LoginFailureHandler());
         return loginFilter;
+    }
+
+    @Bean
+    public TokenCheckFilter tokenCheckFilter() {
+        return new TokenCheckFilter(jwtService, customUserDetailsService);
     }
 
     @Bean
