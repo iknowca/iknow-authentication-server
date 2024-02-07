@@ -12,9 +12,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.security.customFilter.LoginFilter;
 import xyz.iknow.authenticaionserver.security.customFilter.TokenCheckFilter;
@@ -36,6 +38,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
+            http.addFilterBefore(characterEncodingFilter(), CsrfFilter.class);
             http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
             http.csrf(csrf ->csrf.disable());
             http.formLogin(formLogin -> formLogin.disable());
@@ -45,11 +48,18 @@ public class SecurityConfig {
 
             http.authorizeHttpRequests((authorizeRequests) -> {
                 authorizeRequests.requestMatchers("/account/my-info").authenticated();
-                authorizeRequests.requestMatchers("/account/validate-email").permitAll();
-
+                authorizeRequests.requestMatchers("/account/validate-email", "/account/join", "/account/refresh").permitAll();
             });
 
             return http.build();
+    }
+
+    @Bean
+    public CharacterEncodingFilter characterEncodingFilter() {
+        CharacterEncodingFilter filter = new CharacterEncodingFilter();
+        filter.setEncoding("UTF-8");
+        filter.setForceEncoding(true);
+        return filter;
     }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

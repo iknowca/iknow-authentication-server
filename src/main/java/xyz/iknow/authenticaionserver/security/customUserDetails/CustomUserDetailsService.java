@@ -21,7 +21,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     final AccountRepository accountRepository;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        log.info("loadUserByUsername: "+email);
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
         if(maybeAccount.isEmpty()) {
             throw new UsernameNotFoundException("There are no account matching the email: "+email);
