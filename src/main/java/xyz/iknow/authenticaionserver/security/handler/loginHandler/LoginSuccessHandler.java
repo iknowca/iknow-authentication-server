@@ -7,11 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
-import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
-import xyz.iknow.authenticaionserver.security.customFilter.AccountContext;
+import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetails;
 
 import java.io.IOException;

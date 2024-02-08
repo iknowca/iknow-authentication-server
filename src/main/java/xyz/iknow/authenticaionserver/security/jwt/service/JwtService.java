@@ -1,4 +1,4 @@
-package xyz.iknow.authenticaionserver.domain.jwt.service;
+package xyz.iknow.authenticaionserver.security.jwt.service;
 
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 

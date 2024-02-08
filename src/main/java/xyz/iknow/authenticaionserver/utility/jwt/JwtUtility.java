@@ -2,18 +2,21 @@ package xyz.iknow.authenticaionserver.utility.jwt;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
+@PropertySource("classpath:security.properties")
 @Component
 public class JwtUtility {
     @Value("${jwt.secret}")
     private String secret;
+    @Value("${authorization.match.path.ANONYMOUS}")
+    private List<String> anonymousPath;
+    @Value("${authorization.match.path.PERMITALL}")
+    private List<String> permitAllPath;
 
 
     public String generateToken(Map<String, Object> valueMap, long expiration) {
@@ -40,5 +43,8 @@ public class JwtUtility {
                 .parseClaimsJws(token)
                 .getBody();
         return claims;
+    }
+    public boolean isTokenCheckFilterExcludeUri(String uri) {
+        return permitAllPath.contains(uri) || anonymousPath.contains(uri);
     }
 }

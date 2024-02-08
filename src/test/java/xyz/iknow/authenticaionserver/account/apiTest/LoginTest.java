@@ -1,15 +1,12 @@
 package xyz.iknow.authenticaionserver.account.apiTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,7 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
-import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
+import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository.AccessTokenRepository;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository.RefreshTokenRepository;
 

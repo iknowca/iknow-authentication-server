@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 import xyz.iknow.authenticaionserver.domain.account.service.AccountService;
-import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
+import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenService.TokenService;
 import xyz.iknow.authenticaionserver.utility.redis.token.token.RefreshToken;
 

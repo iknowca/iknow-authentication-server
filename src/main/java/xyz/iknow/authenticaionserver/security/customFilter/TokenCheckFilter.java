@@ -10,8 +10,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
+import xyz.iknow.authenticaionserver.security.jwt.exception.TokenException;
+import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetailsService;
+import xyz.iknow.authenticaionserver.utility.jwt.JwtUtility;
 
 import java.io.IOException;
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.Map;
 public class TokenCheckFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
+    private final JwtUtility jwtUtility;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -26,12 +29,30 @@ public class TokenCheckFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String token = request.getHeader("Authorization");
-        if (token == null) {
+        if (jwtUtility.isTokenCheckFilterExcludeUri(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
-        Map<String, Object> jwtValueMap = jwtService.parseToken(token.substring(7));
+        String token = request.getHeader("Authorization");
+//        if (token == null) {
+//            TokenException e = new TokenException(TokenException.TOKEN_ERROR.NOT_FOUND_TOKEN);
+//            e.sendResponseError(response);
+//        }
+        Map<String, Object> jwtValueMap;
+
+        try {
+            if ( token == null) {
+                throw new TokenException(TokenException.TOKEN_ERROR.NOT_FOUND_TOKEN);
+            }
+            if (!token.startsWith("Bearer ")) {
+                throw new TokenException(TokenException.TOKEN_ERROR.INVALID_TOKEN);
+            }
+            jwtValueMap = jwtService.parseToken(token.substring(7));
+        } catch (TokenException e) {
+            e.sendResponseError(response);
+            return;
+        }
+
         String email = (String) jwtValueMap.get("email");
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

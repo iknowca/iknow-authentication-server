@@ -16,12 +16,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
+import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.security.customFilter.LoginFilter;
 import xyz.iknow.authenticaionserver.security.customFilter.TokenCheckFilter;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetailsService;
 import xyz.iknow.authenticaionserver.security.handler.loginHandler.LoginFailureHandler;
 import xyz.iknow.authenticaionserver.security.handler.loginHandler.LoginSuccessHandler;
+import xyz.iknow.authenticaionserver.utility.jwt.JwtUtility;
 
 import java.util.List;
 
@@ -98,6 +99,7 @@ public class SecurityConfig {
 
     @Bean
     public TokenCheckFilter tokenCheckFilter() {
+        return new TokenCheckFilter(jwtService, customUserDetailsService, jwtUtility);
     }
 
     @Bean
