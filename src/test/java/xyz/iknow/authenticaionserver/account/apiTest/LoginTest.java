@@ -26,8 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -92,7 +91,7 @@ public class LoginTest {
 
         //then
         verify(accountRepository, times(2)).findByEmail(invalidEmail);
-        resultActions.andExpect(jsonPath("$.status").value("Bad credentials"));
+        resultActions.andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -110,6 +109,6 @@ public class LoginTest {
 
         //then
         verify(accountRepository, times(2)).findByEmail(email);
-        resultActions.andExpect(jsonPath("$.status").value("Bad credentials"));
+        resultActions.andExpect(status().isUnauthorized());
     }
 }
