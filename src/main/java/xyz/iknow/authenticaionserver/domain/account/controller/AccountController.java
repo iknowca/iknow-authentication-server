@@ -30,7 +30,7 @@ public class AccountController {
         return accountService.refresh(refreshToken);
     }
 
-    @GetMapping("/my-info")
+    @GetMapping
     public ResponseEntity<AccountDTO> getMyInfo() {
         return accountService.getMyInfo();
 }

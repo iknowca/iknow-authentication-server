@@ -47,7 +47,7 @@ public class SecurityConfig {
             http.addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class);
 
             http.authorizeHttpRequests((authorizeRequests) -> {
-                authorizeRequests.requestMatchers("/account/my-info").authenticated();
+                authorizeRequests.requestMatchers("/account").authenticated();
                 authorizeRequests.requestMatchers("/account/validate-email", "/account/join", "/account/refresh").permitAll();
             });
 
