@@ -21,14 +21,6 @@ public class AccountController {
     public ResponseEntity<Map> join(@RequestBody AccountDTO request) {
         return accountService.createAccount(request);
     }
-//    @PostMapping("/login")
-//    public ResponseEntity<Map> login(@RequestBody AccountDTO request) {
-//        return accountService.login(request);
-//    }
-    @GetMapping("/refresh")
-    public ResponseEntity<Map> refresh(@CookieValue("refreshToken") String refreshToken) {
-        return accountService.refresh(refreshToken);
-    }
 
     @GetMapping
     public ResponseEntity<AccountDTO> getMyInfo() {

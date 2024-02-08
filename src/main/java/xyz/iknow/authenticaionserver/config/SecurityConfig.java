@@ -16,13 +16,15 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
+import xyz.iknow.authenticaionserver.security.customFilter.AccessTokenRefreshFilter;
 import xyz.iknow.authenticaionserver.security.customFilter.LoginFilter;
 import xyz.iknow.authenticaionserver.security.customFilter.TokenCheckFilter;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetailsService;
 import xyz.iknow.authenticaionserver.security.handler.loginHandler.LoginFailureHandler;
 import xyz.iknow.authenticaionserver.security.handler.loginHandler.LoginSuccessHandler;
+import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.utility.jwt.JwtUtility;
+import xyz.iknow.authenticaionserver.utility.redis.token.TokenService.TokenService;
 
 import java.util.List;
 
@@ -33,6 +35,7 @@ public class SecurityConfig {
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtUtility jwtUtility;
+    private final TokenService tokenService;
     @Value("${host.frontend.imf}")
     private String frontendHostUrl;
     @Value("${authorization.match.path.ANONYMOUS}")
@@ -51,6 +54,7 @@ public class SecurityConfig {
             http.authenticationManager(buildCustomAuthenticationManager(http));
             http.addFilterBefore(loginFilter(buildCustomAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class);
             http.addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class);
+            http.addFilterBefore(accessTokenRefreshFilter(), LoginFilter.class);
             http.authorizeHttpRequests((authorizeRequests) -> {
                 authorizeRequests.requestMatchers(authenticatedPath.toArray(new String[0])).authenticated();
                 authorizeRequests.requestMatchers(anonymousPath.toArray(new String[0])).anonymous();
@@ -105,6 +109,13 @@ public class SecurityConfig {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AccessTokenRefreshFilter accessTokenRefreshFilter() throws Exception {
+        AccessTokenRefreshFilter refreshFilter = new AccessTokenRefreshFilter(jwtService, tokenService);
+        refreshFilter.setUrl("/jwt/refresh");
+        return refreshFilter;
     }
 
 }

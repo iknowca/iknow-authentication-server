@@ -50,20 +50,22 @@ public class TokenRefreshTest {
         String refreshToken = "validRefreshToken";
         Long id = 1L;
         String email = "validEmail";
-        Account account = Account.builder().id(id).email(email).build();
+        String nickname = "validNickname";
+        Account account = Account.builder().id(id).email(email).nickname(nickname).build();
         String accessToken = "validAccessToken";
 
         when(jwtservice.parseToken(refreshToken)).thenReturn(Map.of("accountId", id.intValue()));
         when(tokenService.findRefreshTokenById(1L)).thenReturn(Optional.of(new RefreshToken(id, refreshToken, 1000L)));
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
-        when(jwtservice.generateAccessToken(account)).thenReturn("validAccessToken");
+        when(jwtservice.parseToken(refreshToken)).thenReturn(Map.of("accountId", id.intValue(), "email", email, "nickname", nickname));
+        when(jwtservice.generateAccessToken(any())).thenReturn(accessToken);
         //when
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/account/refresh")
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/jwt/refresh")
                 .contentType(MediaType.APPLICATION_JSON)
                 .cookie(new Cookie("refreshToken", refreshToken)));
         //then
         resultActions.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken").value("Bearer validAccessToken"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken").value("Bearer "+accessToken))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("success"));
     }
 }

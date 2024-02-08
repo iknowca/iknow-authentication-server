@@ -8,14 +8,12 @@ import org.springframework.stereotype.Service;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
-import xyz.iknow.authenticaionserver.domain.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetails;
+import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenService.TokenService;
-import xyz.iknow.authenticaionserver.utility.redis.token.token.RefreshToken;
 import xyz.iknow.authenticaionserver.utility.validator.EmailValidator;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,29 +51,6 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
 
         return ResponseEntity.ok().body(Map.of("message", "회원가입에 성공했습니다.", "status", "success"));
-    }
-
-    @Override
-    public ResponseEntity<Map> refresh(String refreshToken) {
-        Map<String, Object> values = jwtService.parseToken(refreshToken);
-        if (values == null) {
-            return ResponseEntity.badRequest().body(Map.of("message", "토큰이 유효하지 않습니다.", "status", "fail"));
-        }
-        Long accountId = ((Integer) values.get("accountId")).longValue();
-
-        Optional<RefreshToken> validToken = tokenService.findRefreshTokenById(accountId);
-        if (validToken.isEmpty() || !validToken.get().getJwt().equals(refreshToken)) {
-            return ResponseEntity.badRequest().body(Map.of("message", "토큰이 유효하지 않습니다.", "status", "fail"));
-        }
-
-        Optional<Account> maybeAccount = accountRepository.findById(accountId);
-        if (maybeAccount.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("message", "토큰이 유효하지 않습니다.", "status", "fail"));
-        }
-        Account account = maybeAccount.get();
-
-        return ResponseEntity.ok(Map.of("status", "success",
-                "accessToken", "Bearer " + jwtService.generateAccessToken(account)));
     }
 
     @Override

@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
-import xyz.iknow.authenticaionserver.security.customFilter.AccountContext;
 
 import java.util.Collections;
 import java.util.Optional;
