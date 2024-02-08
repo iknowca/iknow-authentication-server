@@ -2,7 +2,6 @@ package xyz.iknow.authenticaionserver.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,12 +28,18 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@ConfigurationPropertiesScan
 public class SecurityConfig {
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
+    private final JwtUtility jwtUtility;
     @Value("${host.frontend.imf}")
     private String frontendHostUrl;
+    @Value("${authorization.match.path.ANONYMOUS}")
+    private List<String> anonymousPath;
+    @Value("${authorization.match.path.AUTHENTICATED}")
+    private List<String> authenticatedPath;
+    @Value("${authorization.match.path.PERMITALL}")
+    private List<String> permitAllPath;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
@@ -45,10 +50,10 @@ public class SecurityConfig {
             http.authenticationManager(buildCustomAuthenticationManager(http));
             http.addFilterBefore(loginFilter(buildCustomAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class);
             http.addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class);
-
             http.authorizeHttpRequests((authorizeRequests) -> {
-                authorizeRequests.requestMatchers("/account").authenticated();
-                authorizeRequests.requestMatchers("/account/validate-email", "/account/join", "/account/refresh").permitAll();
+                authorizeRequests.requestMatchers(authenticatedPath.toArray(new String[0])).authenticated();
+                authorizeRequests.requestMatchers(anonymousPath.toArray(new String[0])).anonymous();
+                authorizeRequests.requestMatchers(permitAllPath.toArray(new String[0])).permitAll();
             });
 
             return http.build();
@@ -93,7 +98,6 @@ public class SecurityConfig {
 
     @Bean
     public TokenCheckFilter tokenCheckFilter() {
-        return new TokenCheckFilter(jwtService, customUserDetailsService);
     }
 
     @Bean
