@@ -1,5 +1,8 @@
 package xyz.iknow.authenticaionserver.domain.account.service.oauth;
 
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,13 +12,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import xyz.iknow.authenticaionserver.domain.account.entity.Account;
+import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
+import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatform;
+import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
+import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
+import xyz.iknow.authenticaionserver.domain.account.repository.oauth.OauthPlatformRepository;
+import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 
+import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class OauthAccountServiceImpl implements OauthAccountService {
     private final OauthAccountProperties oauthAccountProperties;
+    private final AccountRepository accountRepository;
+    private final OauthPlatformRepository oauthPlatformRepository;
+    private final JwtService jwtService;
 
     @Override
     public ResponseEntity<Map> getOauthUrl(String platform) {
@@ -30,9 +48,18 @@ public class OauthAccountServiceImpl implements OauthAccountService {
 
     @Override
     public ResponseEntity<Map> login(String platform, String code) {
-        String accessToken = getAccessToken(platform, code);
+        String oauthAccessToken = getAccessToken(platform, code);
+        String oauthId = requestOauthId(platform, oauthAccessToken);
 
-        return null;
+        Optional<OauthAccount> maybeAccount = accountRepository.findByOauthId(oauthId);
+        OauthAccount account;
+        if (maybeAccount.isEmpty()) {
+            account = join(platform, oauthId);
+        } else {
+            account = maybeAccount.get();
+        }
+        String accessToken = issueToken(account);
+        return ResponseEntity.ok(Map.of("accessToken", "Bearer " + accessToken, "status", "success"));
     }
 
     public String getAccessToken(String platform, String code) {
@@ -48,12 +75,44 @@ public class OauthAccountServiceImpl implements OauthAccountService {
         body.add("client_id", oauthAccountProperties.getClientId().get(platform));
         body.add("redirect_uri", oauthAccountProperties.getRedirectUri().get(platform));
         body.add("code", code);
-        System.out.println(body);
         final String tokenRequestUrl = oauthAccountProperties.getTokenUrl().get(platform);
         HttpEntity<MultiValueMap> tokenRequest = new HttpEntity<>(body, headers);
         ResponseEntity<Map> response = restTemplate.exchange(tokenRequestUrl, HttpMethod.POST, tokenRequest, Map.class);
-
         return response.getBody().get("access_token").toString();
 
+    }
+
+    public String requestOauthId(String platform, String accessToken) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(httpHeaders);
+        httpHeaders.add("Authorization", "Bearer " + accessToken);
+
+        ResponseEntity<Map> response = restTemplate.exchange(oauthAccountProperties.getUserInfoUrl().get(platform), HttpMethod.GET,request, Map.class);
+        System.out.println(response.getBody())  ;
+        return response.getBody().get("id").toString();
+    }
+
+    public OauthAccount join(String platform, String platformId) {
+        OauthAccount account = OauthAccount.builder()
+                .oauthId(platformId)
+                .platform(oauthPlatformRepository.findByPlatformType(OauthPlatformType.KAKAO))
+                .build();
+        return accountRepository.save(account);
+    }
+
+    public String issueToken(OauthAccount account) {
+        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpServletResponse response = sra.getResponse();
+
+        String accessToken = jwtService.generateAccessToken(account);
+        String refreshToken = jwtService.generateRefreshToken(account);
+
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return accessToken;
     }
 }

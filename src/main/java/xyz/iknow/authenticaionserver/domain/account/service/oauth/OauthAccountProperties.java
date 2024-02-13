@@ -17,4 +17,6 @@ public class OauthAccountProperties {
     private Map<String, String> clientId;
     private Map<String, String> redirectUri;
     private Map<String, String> tokenUrl;
+    private Map<String, String> scope;
+    private Map<String, String> userInfoUrl;
 }
