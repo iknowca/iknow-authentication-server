@@ -3,6 +3,7 @@ package xyz.iknow.authenticaionserver.domain.account.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "account", uniqueConstraints = {
@@ -12,7 +13,7 @@ import lombok.*;
         )
 })
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Account {

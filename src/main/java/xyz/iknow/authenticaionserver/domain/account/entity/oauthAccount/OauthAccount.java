@@ -1,13 +1,16 @@
 package xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 @DiscriminatorValue("ouath")
 public class OauthAccount extends Account {
     private String oauthId;

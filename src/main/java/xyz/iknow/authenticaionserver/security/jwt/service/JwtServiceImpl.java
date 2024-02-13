@@ -26,7 +26,7 @@ public class JwtServiceImpl implements JwtService{
     private final TokenService tokenService;
     @Override
     public String generateAccessToken(Account account) {
-        Map<String, Object> valueMap = Map.of("accountId", account.getId(), "email", account.getEmail(), "nickname", (account.getNickname() != null)?account.getEmail():"");
+        Map<String, Object> valueMap = Map.of("accountId", account.getId());
         String accessToken = jwtUtility.generateToken(valueMap, accessTokenExpiration);
         AccessToken token = AccessToken.builder()
                 .id(account.getId())
@@ -38,7 +38,7 @@ public class JwtServiceImpl implements JwtService{
     }
     @Override
     public String generateRefreshToken(Account account) {
-        Map<String, Object> valueMap = Map.of("accountId", account.getId(), "email", account.getEmail(), "nickname", (account.getNickname() != null)?account.getEmail():"");
+        Map<String, Object> valueMap = Map.of("accountId", account.getId());
         String refreshToken = jwtUtility.generateToken(valueMap, refreshTokenExpiration);
         RefreshToken token = RefreshToken.builder()
                 .id(account.getId())
