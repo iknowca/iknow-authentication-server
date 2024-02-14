@@ -23,11 +23,6 @@ public class Account {
     private Long id;
 
     @Getter
-    private String email;
-    @Getter
-    @JsonIgnore
-    private String password;
-    @Getter
     @Setter
     private String nickname;
 }

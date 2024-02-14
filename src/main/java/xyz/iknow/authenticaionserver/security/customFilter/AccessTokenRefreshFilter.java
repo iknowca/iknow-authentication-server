@@ -68,8 +68,6 @@ public class AccessTokenRefreshFilter extends OncePerRequestFilter {
 
             String accessToken = jwtService.generateAccessToken(Account.builder()
                     .id(accountId)
-                    .email(jwtValueMap.get("email").toString())
-                    .nickname(jwtValueMap.get("nickname").toString())
                     .build());
 
             response.setStatus(200);
