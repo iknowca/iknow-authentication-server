@@ -14,7 +14,7 @@ public class OauthAccountController {
     private final OauthAccountService oauthAccountService;
 
     @GetMapping("/url/{platform}")
-    public ResponseEntity<Map> getOauthUrl(@PathVariable String platform) {
+    public ResponseEntity<Map> getOauthUrl(@PathVariable(required = false) String platform) {
         return oauthAccountService.getOauthUrl(platform);
     }
     @GetMapping("/callback/{platform}")

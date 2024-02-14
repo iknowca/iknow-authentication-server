@@ -24,6 +24,7 @@ import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,6 +38,9 @@ public class OauthAccountServiceImpl implements OauthAccountService {
 
     @Override
     public ResponseEntity<Map> getOauthUrl(String platform) {
+        if (Arrays.stream(OauthPlatformType.values()).noneMatch(oauthPlatformType -> oauthPlatformType.name().equals(platform.toUpperCase()))) {
+            return ResponseEntity.badRequest().body(Map.of("status", "fail", "message", platform + " is not supported"));
+        }
 
         final String url = oauthAccountProperties.getUrl().get(platform);
         final String clientId = oauthAccountProperties.getClientId().get(platform);
