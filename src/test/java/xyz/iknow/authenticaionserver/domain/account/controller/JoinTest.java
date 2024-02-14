@@ -17,12 +17,16 @@ public class JoinTest extends MockMvcTest {
     @Nested
     @DisplayName("클라이언트가 회원가입을 요청할때")
     class Describe_account_join {
-        String email = getTestEmail();
-        String password = getTestPassword();
-        String duplicatedEmail = getTestEmail();
+        String email;
+        String password;
+        String duplicatedEmail;
 
         @BeforeEach
         void setUp() {
+            email = getTestEmail();
+            password = getTestPassword();
+            duplicatedEmail = getTestEmail();
+
             LocalAccount account = LocalAccount.builder()
                     .email(duplicatedEmail)
                     .password(password)
@@ -48,8 +52,6 @@ public class JoinTest extends MockMvcTest {
         @Nested
         @DisplayName("이메일 중복이라면")
         class Context_WhenEmailIsDuplicated {
-
-
             @DisplayName("이메일 중복 에러를 반환한다")
             @Test
             void it_returns_email_duplicated_error() throws Exception {

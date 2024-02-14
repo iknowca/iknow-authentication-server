@@ -43,6 +43,6 @@ public class MockMvcTest {
         return "test" + accoundId + "@email.com";
     }
     public String getTestPassword() {
-        return RandomStringUtils.random(10, true, true);
+        return RandomStringUtils.random(10, true, true)+accoundId;
     }
 }
