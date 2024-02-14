@@ -38,4 +38,21 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .isAccountNonExpired(true)
                 .build();
     }
+
+    public UserDetails loadUserByAccountId(Long accountId) {
+        Optional<Account> maybeAccount = accountRepository.findById(accountId);
+        if(maybeAccount.isEmpty()) {
+            throw new UsernameNotFoundException("There are no account matching the accountId: "+accountId);
+        }
+        Account account = maybeAccount.get();
+
+        return CustomUserDetails.builder()
+                .account(account)
+                .authorities(Collections.singleton(new SimpleGrantedAuthority("ROLE_"+"USER")))
+                .isEnabled(true)
+                .isCredentialsNonExpired(true)
+                .isAccountNonLocked(true)
+                .isAccountNonExpired(true)
+                .build();
+    }
 }

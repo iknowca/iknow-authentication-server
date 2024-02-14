@@ -53,8 +53,8 @@ public class TokenCheckFilter extends OncePerRequestFilter {
             return;
         }
 
-        String email = (String) jwtValueMap.get("email");
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+        Long accountId = Long.parseLong(jwtValueMap.get("accountId").toString());
+        UserDetails userDetails = customUserDetailsService.loadUserByAccountId(accountId);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request, response);
