@@ -7,6 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetails;
 import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
@@ -26,7 +27,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Boolean validateEamil(String email) {
-         Boolean result = accountRepository.existsByEmail(email);
+         Boolean result = accountRepository.existsLocalAccountByEmail(email);
         return result;
     }
 
@@ -40,11 +41,11 @@ public class AccountServiceImpl implements AccountService {
         }
 
 
-        if (accountRepository.existsByEmail(email)) {
+        if (accountRepository.existsLocalAccountByEmail(email)) {
             return ResponseEntity.badRequest().body(Map.of("message", "이미 가입된 이메일입니다."));
         }
 
-        Account account = Account.builder()
+        LocalAccount account = LocalAccount.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .build();
@@ -58,7 +59,6 @@ public class AccountServiceImpl implements AccountService {
         Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
         return ResponseEntity.ok(AccountDTO.builder()
                 .id(account.getId())
-                .email(account.getEmail())
                 .nickname(account.getNickname())
                 .build());
     }

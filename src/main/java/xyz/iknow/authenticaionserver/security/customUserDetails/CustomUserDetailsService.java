@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
+import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 
 import java.util.Collections;
@@ -20,11 +21,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     final AccountRepository accountRepository;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+        Optional<LocalAccount> maybeAccount = accountRepository.findByEmail(email);
         if(maybeAccount.isEmpty()) {
             throw new UsernameNotFoundException("There are no account matching the email: "+email);
         }
-        Account account = maybeAccount.get();
+        LocalAccount account = maybeAccount.get();
 
         return CustomUserDetails.builder()
                 .username(account.getEmail())
