@@ -35,6 +35,7 @@ public class OauthAccountServiceImpl implements OauthAccountService {
     private final AccountRepository accountRepository;
     private final OauthPlatformRepository oauthPlatformRepository;
     private final JwtService jwtService;
+    private final RestTemplate restTemplate;
 
     @Override
     public ResponseEntity<Map> getOauthUrl(String platform) {
@@ -52,6 +53,11 @@ public class OauthAccountServiceImpl implements OauthAccountService {
 
     @Override
     public ResponseEntity<Map> login(String platform, String code) {
+
+        if (Arrays.stream(OauthPlatformType.values()).noneMatch(oauthPlatformType -> oauthPlatformType.name().equals(platform.toUpperCase()))) {
+            return ResponseEntity.badRequest().body(Map.of("status", "fail", "message", platform + " is not supported"));
+        }
+
         String oauthAccessToken = getAccessToken(platform, code);
         String oauthId = requestOauthId(platform, oauthAccessToken);
 
@@ -68,7 +74,6 @@ public class OauthAccountServiceImpl implements OauthAccountService {
 
     public String getAccessToken(String platform, String code) {
 
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
 
         headers.add("Content-type", "application/x-www-form-urlencoded");
@@ -87,7 +92,6 @@ public class OauthAccountServiceImpl implements OauthAccountService {
     }
 
     public String requestOauthId(String platform, String accessToken) {
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
 
         HttpEntity<Map<String, String>> request = new HttpEntity<>(httpHeaders);
