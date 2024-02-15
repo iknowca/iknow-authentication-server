@@ -26,4 +26,8 @@ public class AccountController {
     public ResponseEntity<AccountDTO> getMyInfo() {
         return accountService.getMyInfo();
 }
+    @PatchMapping
+    public ResponseEntity<Map> updateMyInfo(@RequestBody AccountDTO request) {
+        return accountService.updateMyInfo(request);
+    }
 }

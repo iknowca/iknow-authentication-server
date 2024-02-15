@@ -6,12 +6,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "account", uniqueConstraints = {
-        @UniqueConstraint(
-                name = "EMAIL_UNIQUE",
-                columnNames = {"email"}
-        )
-})
 @NoArgsConstructor
 @SuperBuilder
 @AllArgsConstructor

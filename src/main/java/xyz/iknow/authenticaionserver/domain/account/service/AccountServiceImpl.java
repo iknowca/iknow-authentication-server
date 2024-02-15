@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
+import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
+import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
+import xyz.iknow.authenticaionserver.domain.account.repository.oauth.OauthPlatformRepository;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetails;
 import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenService.TokenService;
@@ -24,6 +27,7 @@ public class AccountServiceImpl implements AccountService {
     final private JwtService jwtService;
     final private TokenService tokenService;
     final private BCryptPasswordEncoder passwordEncoder;
+    private final OauthPlatformRepository oauthPlatformRepository;
 
     @Override
     public Boolean validateEamil(String email) {
@@ -61,5 +65,43 @@ public class AccountServiceImpl implements AccountService {
                 .id(account.getId())
                 .nickname(account.getNickname())
                 .build());
+    }
+
+    @Override
+    public ResponseEntity<Map> updateMyInfo(AccountDTO request) {
+        Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
+
+        if (request.getPassword()==null && request.getNickname()==null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "변경할 정보가 없습니다."));
+        }
+
+        if (request.getNickname() != null) {
+            account.setNickname(request.getNickname());
+        }
+        if (request.getPassword() != null) {
+            if (account instanceof LocalAccount) {
+                ((LocalAccount) account).setPassword(passwordEncoder.encode(request.getPassword()));
+            } else if (account instanceof OauthAccount) {
+                return ResponseEntity.badRequest().body(Map.of("message", "소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다."));
+            }
+        }
+        accountRepository.save(account);
+        AccountDTO accountDTO = AccountDTO.builder()
+                .id(account.getId())
+                .nickname(account.getNickname())
+                .build();
+        if (account instanceof LocalAccount) {
+            accountDTO.setEmail(((LocalAccount) account).getEmail());
+        }
+        if (account instanceof OauthAccount) {
+            OauthPlatformType platformType = oauthPlatformRepository.findByAccountId(account.getId());
+            accountDTO.setOauthPlatform(platformType.name());
+        }
+
+        return ResponseEntity.ok().body(Map.of("message", "정보가 변경되었습니다.", "status", "success",
+                "data", AccountDTO.builder()
+                .id(account.getId())
+                .nickname(account.getNickname())
+                .build()));
     }
 }
