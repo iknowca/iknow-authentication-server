@@ -35,4 +35,10 @@ public class TokenServiceImpl implements TokenService{
     public Optional<RefreshToken> findRefreshTokenById(Long id) {
         return refreshTokenRepository.findById(id);
     }
+
+    @Override
+    public void delete(Long id) {
+        accessTokenRepository.deleteById(id);
+        refreshTokenRepository.deleteById(id);
+    }
 }

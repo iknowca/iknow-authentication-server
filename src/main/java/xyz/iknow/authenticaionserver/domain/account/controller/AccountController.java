@@ -30,4 +30,8 @@ public class AccountController {
     public ResponseEntity<Map> updateMyInfo(@RequestBody AccountDTO request) {
         return accountService.updateMyInfo(request);
     }
+    @DeleteMapping("/logout")
+    public ResponseEntity<Map> logout() {
+        return accountService.logout();
+    }
 }

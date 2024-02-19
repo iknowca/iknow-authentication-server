@@ -1,10 +1,15 @@
 package xyz.iknow.authenticaionserver.domain.account.service;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
@@ -19,6 +24,7 @@ import xyz.iknow.authenticaionserver.utility.validator.EmailValidator;
 
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
@@ -103,5 +109,23 @@ public class AccountServiceImpl implements AccountService {
                 .id(account.getId())
                 .nickname(account.getNickname())
                 .build()));
+    }
+
+    @Override
+    public ResponseEntity<Map> logout() {
+        log.info("logout called");
+        Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
+        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpServletResponse response = sra.getResponse();
+
+        tokenService.delete(account.getId());
+
+        Cookie refreshToken = new Cookie("refreshToken", null);
+        refreshToken.setMaxAge(0);
+        refreshToken.setPath("/");
+
+        response.addCookie(refreshToken);
+
+        return ResponseEntity.ok().body(Map.of("message", "로그아웃 되었습니다.", "status", "success"));
     }
 }

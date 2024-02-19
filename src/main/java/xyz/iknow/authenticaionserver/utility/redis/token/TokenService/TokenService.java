@@ -10,4 +10,5 @@ public interface TokenService {
     RefreshToken save(RefreshToken token);
     Optional<AccessToken> findAccessTokenById(Long id);
     Optional<RefreshToken> findRefreshTokenById(Long id);
+    void delete(Long id);
 }

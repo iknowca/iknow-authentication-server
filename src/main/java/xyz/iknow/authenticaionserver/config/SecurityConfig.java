@@ -52,6 +52,7 @@ public class SecurityConfig {
             http.csrf(csrf ->csrf.disable());
             http.formLogin(formLogin -> formLogin.disable());
             http.authenticationManager(buildCustomAuthenticationManager(http));
+            http.logout(logout -> logout.disable());
             http.addFilterBefore(loginFilter(buildCustomAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class);
             http.addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class);
             http.addFilterBefore(accessTokenRefreshFilter(), LoginFilter.class);

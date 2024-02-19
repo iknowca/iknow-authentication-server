@@ -13,4 +13,6 @@ public interface AccountService {
     ResponseEntity<AccountDTO> getMyInfo();
 
     ResponseEntity<Map> updateMyInfo(AccountDTO request);
+
+    ResponseEntity<Map> logout();
 }
