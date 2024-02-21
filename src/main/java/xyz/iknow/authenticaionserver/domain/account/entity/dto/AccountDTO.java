@@ -1,4 +1,4 @@
-package xyz.iknow.authenticaionserver.domain.account.entity;
+package xyz.iknow.authenticaionserver.domain.account.entity.dto;
 
 import lombok.*;
 
@@ -12,4 +12,5 @@ public class AccountDTO {
     private String password;
     private String nickname;
     private String oauthPlatform;
+    private String accountType;
 }

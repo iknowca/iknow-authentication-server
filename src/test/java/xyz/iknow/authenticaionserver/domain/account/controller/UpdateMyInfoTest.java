@@ -1,10 +1,9 @@
 package xyz.iknow.authenticaionserver.domain.account.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.*;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.entity.dto.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;

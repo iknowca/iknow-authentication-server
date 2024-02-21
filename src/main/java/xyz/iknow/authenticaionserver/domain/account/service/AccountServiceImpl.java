@@ -2,6 +2,7 @@ package xyz.iknow.authenticaionserver.domain.account.service;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
-import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.entity.AccountDetails;
+import xyz.iknow.authenticaionserver.domain.account.entity.dto.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
+import xyz.iknow.authenticaionserver.domain.account.entity.dto.UpdateAccountForm;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
@@ -37,7 +40,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Boolean validateEamil(String email) {
-         Boolean result = accountRepository.existsLocalAccountByEmail(email);
+        Boolean result = accountRepository.existsLocalAccountByEmail(email);
         return result;
     }
 
@@ -59,25 +62,40 @@ public class AccountServiceImpl implements AccountService {
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .build();
+
+        AccountDetails accountDetails = new AccountDetails();
+        account.setAccountDetails(accountDetails);
         accountRepository.save(account);
 
         return ResponseEntity.ok().body(Map.of("message", "회원가입에 성공했습니다.", "status", "success"));
     }
 
     @Override
+    @Transactional
     public ResponseEntity<AccountDTO> getMyInfo() {
         Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
-        return ResponseEntity.ok(AccountDTO.builder()
+
+        AccountDTO accountDTO = AccountDTO.builder()
                 .id(account.getId())
                 .nickname(account.getNickname())
-                .build());
+                .accountType(account.getClass().getSimpleName())
+                .build();
+        if (account instanceof LocalAccount) {
+            accountDTO.setEmail(((LocalAccount) account).getEmail());
+        }
+        if (account instanceof OauthAccount) {
+            OauthPlatformType platformType = oauthPlatformRepository.findByAccountId(account.getId());
+            accountDTO.setOauthPlatform(platformType.name());
+        }
+
+        return ResponseEntity.ok(accountDTO);
     }
 
     @Override
-    public ResponseEntity<Map> updateMyInfo(AccountDTO request) {
+    public ResponseEntity<Map> updateMyInfo(UpdateAccountForm request) {
         Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
 
-        if (request.getPassword()==null && request.getNickname()==null) {
+        if (request.getPassword() == null && request.getNickname() == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "변경할 정보가 없습니다."));
         }
 
@@ -87,6 +105,7 @@ public class AccountServiceImpl implements AccountService {
         if (request.getPassword() != null) {
             if (account instanceof LocalAccount) {
                 ((LocalAccount) account).setPassword(passwordEncoder.encode(request.getPassword()));
+
             } else if (account instanceof OauthAccount) {
                 return ResponseEntity.badRequest().body(Map.of("message", "소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다."));
             }
@@ -105,10 +124,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         return ResponseEntity.ok().body(Map.of("message", "정보가 변경되었습니다.", "status", "success",
-                "data", AccountDTO.builder()
-                .id(account.getId())
-                .nickname(account.getNickname())
-                .build()));
+                "data", accountDTO));
     }
 
     @Override
@@ -127,5 +143,14 @@ public class AccountServiceImpl implements AccountService {
         response.addCookie(refreshToken);
 
         return ResponseEntity.ok().body(Map.of("message", "로그아웃 되었습니다.", "status", "success"));
+    }
+
+    @Override
+    public ResponseEntity<Map> withdrawAccount() {
+        log.info("withdrawAccount called");
+        Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
+        account.getAccountDetails().setWithDraw(true);
+        accountRepository.save(account);
+        return ResponseEntity.ok().body(Map.of("message", "회원탈퇴 되었습니다.", "status", "success"));
     }
 }

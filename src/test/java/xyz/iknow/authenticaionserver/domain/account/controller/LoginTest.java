@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import xyz.iknow.authenticaionserver.domain.account.entity.AccountDetails;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
 import xyz.iknow.authenticaionserver.test.MockMvcTest;
 
@@ -29,6 +30,8 @@ public class LoginTest extends MockMvcTest {
                     .email(email)
                     .password(passwordEncoder.encode(password))
                     .build();
+            AccountDetails accountDetails = new AccountDetails();
+            account.setAccountDetails(accountDetails);
             accountRepository.save(account);
         }
 

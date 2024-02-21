@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
+import xyz.iknow.authenticaionserver.domain.account.entity.AccountDetails;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatform;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
@@ -107,6 +108,8 @@ public class OauthAccountServiceImpl implements OauthAccountService {
                 .oauthId(platformId)
                 .platform(oauthPlatformRepository.findByPlatformType(OauthPlatformType.KAKAO))
                 .build();
+        AccountDetails accountDetails = new AccountDetails();
+        account.setAccountDetails(accountDetails);
         return accountRepository.save(account);
     }
 

@@ -1,7 +1,8 @@
 package xyz.iknow.authenticaionserver.domain.account.service;
 
 import org.springframework.http.ResponseEntity;
-import xyz.iknow.authenticaionserver.domain.account.entity.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.entity.dto.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.entity.dto.UpdateAccountForm;
 
 import java.util.Map;
 
@@ -12,7 +13,9 @@ public interface AccountService {
 
     ResponseEntity<AccountDTO> getMyInfo();
 
-    ResponseEntity<Map> updateMyInfo(AccountDTO request);
+    ResponseEntity<Map> updateMyInfo(UpdateAccountForm request);
 
     ResponseEntity<Map> logout();
+
+    ResponseEntity<Map> withdrawAccount();
 }

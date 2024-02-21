@@ -1,5 +1,6 @@
 package xyz.iknow.authenticaionserver.security.customUserDetails;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     final AccountRepository accountRepository;
+    @Transactional
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<LocalAccount> maybeAccount = accountRepository.findByEmail(email);
@@ -35,7 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .isEnabled(true)
                 .isCredentialsNonExpired(true)
                 .isAccountNonLocked(true)
-                .isAccountNonExpired(true)
+                .isAccountNonExpired(!account.getAccountDetails().getWithDraw())
                 .build();
     }
 

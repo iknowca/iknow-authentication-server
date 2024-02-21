@@ -19,4 +19,9 @@ public class Account {
     @Getter
     @Setter
     private String nickname;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @Setter
+    @Getter
+    private AccountDetails accountDetails;
 }
