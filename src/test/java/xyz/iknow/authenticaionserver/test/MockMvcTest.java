@@ -3,6 +3,7 @@ package xyz.iknow.authenticaionserver.test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,13 +14,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 import xyz.iknow.authenticaionserver.domain.account.repository.oauth.OauthPlatformRepository;
+import xyz.iknow.authenticaionserver.initializer.RedisInitializer;
 import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository.AccessTokenRepository;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository.RefreshTokenRepository;
 
 @SpringBootTest
+@ExtendWith(RedisInitializer.class)
 @AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class MockMvcTest {
     @Autowired
     protected MockMvc mockMvc;

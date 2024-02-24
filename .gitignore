@@ -32,6 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
-*.properties
+application.properties
+oauth.properties
+security.properties
 .secrets/
 .gradle/
+/mysql/
