@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  spring:
+    depends_on:
+      - mysql
+    image: "spring-ias-prod-container"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9001:9001"
+    networks:
+      - IAS
+
+networks:
+  IAS:
+      driver: bridge
