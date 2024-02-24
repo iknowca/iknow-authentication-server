@@ -15,6 +15,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'corretto'
+
       - name: create properties for CI Test
         run: |
           cd src/main/resources
@@ -39,6 +40,7 @@ jobs:
     steps:
       - name: check
         run: |
+          cd ..
           ls -al
           pwd
       - name: SCP Action
