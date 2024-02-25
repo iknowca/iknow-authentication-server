@@ -1,21 +1,19 @@
 package xyz.iknow.authenticaionserver.domain.account.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDetails;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
-import xyz.iknow.authenticaionserver.test.MockMvcTest;
+import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("로그인 테스트")
-public class LoginTest extends MockMvcTest {
+public class LoginTest extends IntegrationTest {
     @Nested
     @DisplayName("클라이언트가 로그인을 요청할때")
     class Describe_account_login {
@@ -23,8 +21,8 @@ public class LoginTest extends MockMvcTest {
         String password;
         @BeforeEach
         void setUp() {
-            email = getTestEmail();
-            password = getTestPassword();
+            email = ag.getTestEmail();
+            password = ag.getTestPassword();
 
             LocalAccount account = LocalAccount.builder()
                     .email(email)
@@ -59,7 +57,7 @@ public class LoginTest extends MockMvcTest {
         @Order(1)
         class Context_WhenPasswordIsInvalid {
 
-            String invalidPassword = getTestPassword();
+            String invalidPassword = ag.getTestPassword();
 
             @Test
             @DisplayName("로그인에 실패한다")
@@ -76,7 +74,7 @@ public class LoginTest extends MockMvcTest {
         @DisplayName("존재하지 않는 이메일이면")
         @Order(1)
         class Context_WhenEmailIsNotExists {
-            String invalidEmail = getTestEmail();
+            String invalidEmail = ag.getTestEmail();
             @Test
             @DisplayName("로그인에 실패한다")
             void it_returns_email_not_exists_error() throws Exception {

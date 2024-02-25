@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
 import xyz.iknow.authenticaionserver.domain.account.service.oauth.OauthAccountProperties;
-import xyz.iknow.authenticaionserver.test.MockMvcTest;
+import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("OauthLogin 테스트")
-public class OauthLoginTest extends MockMvcTest {
+public class OauthLoginTest extends IntegrationTest {
     @Autowired
     OauthAccountProperties oauthAccountProperties;
 
@@ -46,7 +46,7 @@ public class OauthLoginTest extends MockMvcTest {
                 @BeforeEach
                 void setUp() throws JsonProcessingException {
 
-                    oauthId = "idOfAMemberWhoIsAlreadyRegistered" + getUniqueId();
+                    oauthId = "idOfAMemberWhoIsAlreadyRegistered" + ag.getUniqueId();
                     OauthAccount account = OauthAccount.builder()
                             .oauthId(oauthId)
                             .platform(oauthPlatformRepository.findByPlatformType(OauthPlatformType.KAKAO))
@@ -79,7 +79,7 @@ public class OauthLoginTest extends MockMvcTest {
                 @BeforeEach
                 void setUp() throws JsonProcessingException {
 
-                    oauthId = oauthId + getUniqueId();
+                    oauthId = oauthId + ag.getUniqueId();
 
                     Map<String, String> kakaoResponse = Map.of("id", oauthId);
 

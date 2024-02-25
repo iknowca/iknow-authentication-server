@@ -4,12 +4,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import xyz.iknow.authenticaionserver.test.MockMvcTest;
+import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("OauthUrl 요청 테스트")
-public class GetOauthUrlTest extends MockMvcTest {
+public class GetOauthUrlTest extends IntegrationTest {
     @Nested
     @DisplayName("클라이언트가 OauthUrl을 요청하면")
     class Describe_getOauthUrl {

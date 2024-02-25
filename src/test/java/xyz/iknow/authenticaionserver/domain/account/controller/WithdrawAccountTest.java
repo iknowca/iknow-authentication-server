@@ -1,9 +1,6 @@
 package xyz.iknow.authenticaionserver.domain.account.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import jakarta.transaction.Transactional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,14 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import xyz.iknow.authenticaionserver.test.MockMvcTest;
+import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("회원 탈퇴 테스트")
-public class WithdrawAccountTest extends MockMvcTest {
+public class WithdrawAccountTest extends IntegrationTest {
     @Nested
     @DisplayName("클라이언트가 회원 탈퇴를 요청할 때")
     class Describe_withdrawAccount {
@@ -28,8 +25,8 @@ public class WithdrawAccountTest extends MockMvcTest {
 
         @BeforeEach
         void setUp() throws Exception {
-            email = getTestEmail();
-            password = getTestPassword();
+            email = ag.getTestEmail();
+            password = ag.getTestPassword();
 
             String responseContent;
 

@@ -12,6 +12,7 @@ services:
     networks:
       - default
       - gateway
+      - token_network
 
 networks:
   default:
@@ -20,3 +21,6 @@ networks:
   gateway:
     external:
       name: iknow_gateway
+  token_network:
+    external:
+      name: token_network

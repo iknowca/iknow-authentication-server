@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
-import xyz.iknow.authenticaionserver.test.MockMvcTest;
+import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 @DisplayName("토큰 갱신 테스트")
-public class TokenRefreshTest extends MockMvcTest {
+public class TokenRefreshTest extends IntegrationTest {
 
     @Nested
     @DisplayName("클라이언트가 토큰을 갱신 요청할 때")
@@ -23,11 +23,11 @@ public class TokenRefreshTest extends MockMvcTest {
 
         @BeforeEach
         void setUp() {
-            email = getTestEmail();
-            password = getTestPassword();
+            email = ag.getTestEmail();
+            password = ag.getTestPassword();
             LocalAccount account = LocalAccount.builder()
                     .email(email)
-                    .password(passwordEncoder.encode(getTestPassword()))
+                    .password(passwordEncoder.encode(ag.getTestPassword()))
                     .build();
             accountRepository.save(account);
 

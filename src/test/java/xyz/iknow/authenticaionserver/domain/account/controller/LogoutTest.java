@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
-import xyz.iknow.authenticaionserver.test.MockMvcTest;
+import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("로그아웃 테스트")
-public class LogoutTest extends MockMvcTest {
+public class LogoutTest extends IntegrationTest {
     @Nested
     @DisplayName("로그아웃 요청이 들어왔을 때")
     class Describe_logout {
@@ -23,8 +23,8 @@ public class LogoutTest extends MockMvcTest {
         @BeforeEach
         void setup() {
             LocalAccount account = LocalAccount.builder()
-                    .email(getTestEmail())
-                    .password(getTestPassword())
+                    .email(ag.getTestEmail())
+                    .password(ag.getTestPassword())
                     .build();
             accountRepository.save(account);
             accessToken = jwtService.generateAccessToken(account);

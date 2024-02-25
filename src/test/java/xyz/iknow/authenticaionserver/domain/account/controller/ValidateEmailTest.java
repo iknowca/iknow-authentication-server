@@ -5,7 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
-import xyz.iknow.authenticaionserver.test.MockMvcTest;
+import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 import java.util.Map;
 
@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("이메일 계정 확인 테스트")
-public class ValidateEmailTest extends MockMvcTest {
+public class ValidateEmailTest extends IntegrationTest {
 
     @Nested
     @DisplayName("클라이언트가 이메일 중복검사를 요청할때")
@@ -26,12 +26,12 @@ public class ValidateEmailTest extends MockMvcTest {
                     .build();
             accountRepository.save(account);
         }
-        String duplicatedEmail = getTestEmail();
+        String duplicatedEmail = ag.getTestEmail();
 
         @Nested
         @DisplayName("중복되지 않은 이메일을 입력하면")
         class Context_not_duplicated_email {
-            String validateEmail = getTestEmail();
+            String validateEmail = ag.getTestEmail();
 
             @Test
             @DisplayName("false를 반환한다")

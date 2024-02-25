@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
-import xyz.iknow.authenticaionserver.test.MockMvcTest;
+import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("내 정보 조회 테스트")
-public class GetInfoTest extends MockMvcTest {
+public class GetInfoTest extends IntegrationTest {
     @Nested
     @DisplayName("클라이언트가 내 정보를 조회할 때")
     class Describe_requestGetInfo {
@@ -24,11 +24,11 @@ public class GetInfoTest extends MockMvcTest {
 
         @BeforeEach
         void setUp() {
-            email = getTestEmail();
-            password = getTestPassword();
+            email = ag.getTestEmail();
+            password = ag.getTestPassword();
             LocalAccount account = LocalAccount.builder()
                     .email(email)
-                    .password(passwordEncoder.encode(getTestPassword()))
+                    .password(passwordEncoder.encode(ag.getTestPassword()))
                     .build();
             accountRepository.save(account);
             id = account.getId();

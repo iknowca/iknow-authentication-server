@@ -7,13 +7,13 @@ import xyz.iknow.authenticaionserver.domain.account.entity.dto.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
-import xyz.iknow.authenticaionserver.test.MockMvcTest;
+import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("내 정보 수정 테스트")
-public class UpdateMyInfoTest extends MockMvcTest {
+public class UpdateMyInfoTest extends IntegrationTest {
     @Nested
     @DisplayName("클라이언트가 내 정보를 수정하려고 할 때")
     class Describe_updateMyInfo {
@@ -24,15 +24,15 @@ public class UpdateMyInfoTest extends MockMvcTest {
         @BeforeEach
         void setUp() {
             oauthAccount = OauthAccount.builder()
-                    .oauthId("oauthId" + getUniqueId())
+                    .oauthId("oauthId" + ag.getUniqueId())
                     .platform(oauthPlatformRepository.findByPlatformType(OauthPlatformType.KAKAO))
                     .nickname("oauthDefaultNickname")
                     .build();
             accountRepository.save(oauthAccount);
 
             localAccount = LocalAccount.builder()
-                    .email(getTestEmail())
-                    .password(passwordEncoder.encode(getTestPassword()))
+                    .email(ag.getTestEmail())
+                    .password(passwordEncoder.encode(ag.getTestPassword()))
                     .nickname("localDefaultNickname")
                     .build();
             accountRepository.save(localAccount);

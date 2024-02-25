@@ -5,7 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
-import xyz.iknow.authenticaionserver.test.MockMvcTest;
+import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 import java.util.Map;
 
@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("회원가입 테스트")
-public class JoinTest extends MockMvcTest {
+public class JoinTest extends IntegrationTest {
     @Nested
     @DisplayName("클라이언트가 회원가입을 요청할때")
     class Describe_account_join {
@@ -23,9 +23,9 @@ public class JoinTest extends MockMvcTest {
 
         @BeforeEach
         void setUp() {
-            email = getTestEmail();
-            password = getTestPassword();
-            duplicatedEmail = getTestEmail();
+            email = ag.getTestEmail();
+            password = ag.getTestPassword();
+            duplicatedEmail = ag.getTestEmail();
 
             LocalAccount account = LocalAccount.builder()
                     .email(duplicatedEmail)
