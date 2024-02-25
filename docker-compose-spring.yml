@@ -3,6 +3,7 @@ version: "3.8"
 services:
   spring:
     image: "spring-ias-prod-container"
+    container_name: spring-ias-prod-container
     build:
       context: .
       dockerfile: Dockerfile
