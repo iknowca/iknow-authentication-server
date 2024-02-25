@@ -4,7 +4,7 @@
 REST API를 제공하며, 클라이언트는 이 서버를 통해 사용자의 인증과 인가를 처리합니다.<br>
 프론트엔드는 포함되어 있지 않으며 별도 [레포지토리](https://github.com/iknowca/iknow-main-frontend)에서 구현하였습니다.
 ## 서버 구조
-![img.png](readme/img.png)
+![img.png](readme/server-arch.png)
 
 ## 서버 주요 관심사
 - **사용자 인증/인가**<br>
@@ -27,5 +27,12 @@ REST API를 제공하며, 클라이언트는 이 서버를 통해 사용자의 �
 
 - **배포 자동화**<br>
 Github Actions를 사용하여 CI/CD를 구축하였습니다.<br>
-Main 브랜치에 push가 되면 테스트를 수행하고, 테스트가 성공하면 빌드를 수행합니다.<br>
-빌드가 성공하면 Docker Image를 생성합니다.
+Main 브랜치에 push가 되면 testcontainer를 사용해 테스트를 수행하고, 테스트가 성공하면 빌드를 수행합니다.<br>
+빌드가 성공하면 SCP 액션을 통해 서버로 빌드파일을 복사하고<br>서버에서 복사된 빌드 파일을 Docker 이미지로 제작하여 container로 실행시킵니다.<br>
+<br>
+
+- **Gateway**<br>
+  nginx를 사용하여 API Gateway를 구축하였습니다.<br>
+  
+## 프로젝트 아키텍쳐
+![img.png](readme/project-arch.png)
