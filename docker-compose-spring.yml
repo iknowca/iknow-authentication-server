@@ -10,7 +10,12 @@ services:
       - "9001:9001"
     networks:
       - IAS
+      - gateway
 
 networks:
-  IAS:
-    driver: bridge
+  default:
+    external:
+      name: IAS
+  gateway:
+    external:
+      name: iknow_gateway
