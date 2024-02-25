@@ -10,7 +10,7 @@ services:
     ports:
       - "9001:9001"
     networks:
-      - IAS
+      - default
       - gateway
 
 networks:
