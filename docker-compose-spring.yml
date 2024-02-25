@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  spring:
+    image: "spring-ias-prod-container"
+    container_name: spring-ias-prod-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9001:9001"
+    networks:
+      - default
+      - gateway
+
+networks:
+  default:
+    external:
+      name: IAS
+  gateway:
+    external:
+      name: iknow_gateway
