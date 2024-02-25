@@ -36,3 +36,6 @@ Main 브랜치에 push가 되면 testcontainer를 사용해 테스트를 수행�
   
 ## 프로젝트 아키텍쳐
 ![img.png](readme/project-arch.png)
+[auth-server](https://github.com/iknowca/iknow-authentication-server)는 프로젝트의 인증과 인가를 담당하는 서버입니다.<br>
+[board-server](https://github.com/iknowca/board-server)는 게시글을 담당하는 서버입니다.<br>
+[main-frontend](https://github.com/iknowca/iknow-main-frontend)는 프론트엔드입니다.<br>
