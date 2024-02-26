@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  spring:
+    image: "spring-container"
+    container_name: spring-ias-prod-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9001:9001"
+  redis:
+    image: "redis:latest"
+    container_name: redis-container
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    environment:
+      REDIS_PASSWORD: test
+    networks:
+      - ias
+
+  redis-cache:
+    image: "redis:latest"
+    container_name: redis-cache-container
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    environment:
+      REDIS_PASSWORD: iknow@1234
+    networks:
+      - ias
+
+  mysql:
+    image: "mysql:8.0"
+    container_name: mysql-container
+    volumes:
+      - ./mysql/dbdata:/var/lib/mysql
+      - ./mysql/logs:/var/log/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      MYSQL_DATABASE: test
+    networks:
+      - ias
+
+networks:
+  ias:
+    driver: bridge
+
+

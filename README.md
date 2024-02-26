@@ -6,7 +6,7 @@ REST API를 제공하며, 클라이언트는 이 서버를 통해 사용자의 �
 ## 서버 구조
 ![img.png](readme/server-arch.png)
 
-## 서버 주요 관심사
+## 서버 구현 기능
 - **사용자 인증/인가**<br>
   Spring Security를 일관된 방식으로 사용하여 사용자의 인증과 인가를 처리합니다.
 
@@ -33,9 +33,33 @@ Main 브랜치에 push가 되면 testcontainer를 사용해 테스트를 수행�
 
 - **Gateway**<br>
   nginx를 사용하여 API Gateway를 구축하였습니다.<br>
+
+
+- **Cache**<br>
+  사용자의 정보를 Redis에 저장하여 사용자의 인증과 인가를 빠르게 처리합니다.
   
 ## 프로젝트 아키텍쳐
 ![img.png](readme/project-arch.png)
 [auth-server](https://github.com/iknowca/iknow-authentication-server)는 프로젝트의 인증과 인가를 담당하는 서버입니다.<br>
 [board-server](https://github.com/iknowca/board-server)는 게시글을 담당하는 서버입니다.<br>
 [main-frontend](https://github.com/iknowca/iknow-main-frontend)는 프론트엔드입니다.<br>
+
+## 기술 스택
+- Spring Boot / Security / Data JPA
+- DB: MySQL/ Redis
+- Test: Junit5/ Mockito/ Testcontainer
+- CI/CD: Github Actions
+- Container: Docker
+- Gateway: Nginx
+- Documentation: Notion, Mermaid
+- 부하 테스트: nGrinder, POSTMAN
+- OS: Ubuntu, MacOS
+- IDE: IntelliJ, VSCode
+- VCS: Git
+
+## 프로젝트 실행 방법
+1. Docker 설치
+2. Docker-compose 설치
+3. 프로젝트 루트 디렉토리에서 `docker-compose up` 명령어 실행
+4. `localhost:9001`으로 접속하여 서비스 확인
+ 
