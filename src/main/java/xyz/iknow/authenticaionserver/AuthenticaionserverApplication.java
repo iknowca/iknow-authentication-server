@@ -3,7 +3,6 @@ package xyz.iknow.authenticaionserver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.cache.annotation.EnableCaching;
 
 import java.util.PriorityQueue;
 
