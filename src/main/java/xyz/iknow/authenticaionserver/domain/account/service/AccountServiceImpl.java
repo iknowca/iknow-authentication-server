@@ -73,7 +73,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    @Cacheable(value = "account", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getPrincipal().getAccount().getId()")
     public ResponseEntity<AccountDTO> getMyInfo() {
         Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
 
