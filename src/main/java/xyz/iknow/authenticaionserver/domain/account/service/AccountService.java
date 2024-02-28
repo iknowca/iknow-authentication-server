@@ -1,8 +1,8 @@
 package xyz.iknow.authenticaionserver.domain.account.service;
 
 import org.springframework.http.ResponseEntity;
-import xyz.iknow.authenticaionserver.domain.account.entity.dto.AccountDTO;
-import xyz.iknow.authenticaionserver.domain.account.entity.dto.UpdateAccountForm;
+import xyz.iknow.authenticaionserver.domain.account.dto.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.dto.UpdateAccountForm;
 
 import java.util.Map;
 

@@ -5,18 +5,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import xyz.iknow.authenticaionserver.domain.account.dto.oauth.OauthPlatformDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDetails;
-import xyz.iknow.authenticaionserver.domain.account.entity.dto.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.dto.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
-import xyz.iknow.authenticaionserver.domain.account.entity.dto.UpdateAccountForm;
+import xyz.iknow.authenticaionserver.domain.account.dto.UpdateAccountForm;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
@@ -86,7 +86,9 @@ public class AccountServiceImpl implements AccountService {
         }
         if (account instanceof OauthAccount) {
             OauthPlatformType platformType = oauthPlatformRepository.findByAccountId(account.getId());
-            accountDTO.setOauthPlatform(platformType.name());
+            OauthPlatformDTO oauthPlatformDTO = new OauthPlatformDTO();
+            oauthPlatformDTO.setPlatformType(OauthPlatformType.valueOf(platformType.name()));
+            accountDTO.setOauthPlatform(oauthPlatformDTO);
         }
 
         return ResponseEntity.ok(accountDTO);
@@ -121,7 +123,9 @@ public class AccountServiceImpl implements AccountService {
         }
         if (account instanceof OauthAccount) {
             OauthPlatformType platformType = oauthPlatformRepository.findByAccountId(account.getId());
-            accountDTO.setOauthPlatform(platformType.name());
+            OauthPlatformDTO oauthPlatformDTO = new OauthPlatformDTO();
+            oauthPlatformDTO.setPlatformType(OauthPlatformType.valueOf(platformType.name()));
+            accountDTO.setOauthPlatform(oauthPlatformDTO);
         }
 
         return ResponseEntity.ok().body(Map.of("message", "정보가 변경되었습니다.", "status", "success",

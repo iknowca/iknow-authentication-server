@@ -1,4 +1,4 @@
-package xyz.iknow.authenticaionserver.domain.account.entity.dto;
+package xyz.iknow.authenticaionserver.domain.account.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
