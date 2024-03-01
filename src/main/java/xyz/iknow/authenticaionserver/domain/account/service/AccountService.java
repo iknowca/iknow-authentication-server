@@ -1,21 +1,19 @@
 package xyz.iknow.authenticaionserver.domain.account.service;
 
-import org.springframework.http.ResponseEntity;
 import xyz.iknow.authenticaionserver.domain.account.dto.AccountDTO;
-import xyz.iknow.authenticaionserver.domain.account.dto.UpdateAccountForm;
-
-import java.util.Map;
+import xyz.iknow.authenticaionserver.domain.account.dto.LocalAccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 
 public interface AccountService {
     Boolean validateEamil(String email);
 
-    ResponseEntity<Map> createAccount(AccountDTO request);
+    void createAccount(LocalAccountDTO request);
 
-    ResponseEntity<AccountDTO> getMyInfo();
+    AccountDTO getMyInfo(Account account);
 
-    ResponseEntity<Map> updateMyInfo(UpdateAccountForm request);
+    AccountDTO updateMyInfo(Account account, AccountDTO request);
 
-    ResponseEntity<Map> logout();
+    void logout(Account account);
 
-    ResponseEntity<Map> withdrawAccount();
+    void withdrawAccount(Account account);
 }

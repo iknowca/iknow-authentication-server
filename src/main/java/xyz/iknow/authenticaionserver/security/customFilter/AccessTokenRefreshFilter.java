@@ -44,8 +44,8 @@ public class AccessTokenRefreshFilter extends OncePerRequestFilter {
         }
 
         String token = null;
-        for(int i = 0; i < request.getCookies().length; i++) {
-            if(request.getCookies()[i].getName().equals("refreshToken")) {
+        for (int i = 0; i < request.getCookies().length; i++) {
+            if (request.getCookies()[i].getName().equals("refreshToken")) {
                 token = request.getCookies()[i].getValue();
                 break;
             }

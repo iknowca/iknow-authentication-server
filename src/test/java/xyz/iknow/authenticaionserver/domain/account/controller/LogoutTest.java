@@ -22,10 +22,7 @@ public class LogoutTest extends IntegrationTest {
 
         @BeforeEach
         void setup() {
-            LocalAccount account = LocalAccount.builder()
-                    .email(ag.getTestEmail())
-                    .password(ag.getTestPassword())
-                    .build();
+            LocalAccount account = LocalAccount.builder().email(ag.getTestEmail()).password(ag.getTestPassword()).build();
             accountRepository.save(account);
             accessToken = jwtService.generateAccessToken(account);
         }
@@ -36,8 +33,7 @@ public class LogoutTest extends IntegrationTest {
             @Test
             @DisplayName("200 OK를 반환한다")
             void it_returns_200ok() throws Exception {
-                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete("/account/logout")
-                        .header("Authorization", "Bearer " + accessToken));
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete("/account/logout").header("Authorization", "Bearer " + accessToken));
 
                 result.andExpect(status().isOk());
             }
@@ -47,11 +43,11 @@ public class LogoutTest extends IntegrationTest {
         @DisplayName("accessToken이 적절하지 않아 로그아웃에 실패하면")
         class Context_logout_fail {
             String accessToken = "invalid token";
+
             @Test
             @DisplayName("401 Unauthorized를 반환한다")
             void it_returns_bad_request() throws Exception {
-                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete("/account/logout")
-                        .header("Authorization", "Bearer " + accessToken));
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete("/account/logout").header("Authorization", "Bearer " + accessToken));
 
                 result.andExpect(status().isUnauthorized());
             }

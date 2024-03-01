@@ -1,9 +1,9 @@
 package xyz.iknow.authenticaionserver.domain.account.service.oauth;
 
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,17 +14,13 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDetails;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
-import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatform;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 import xyz.iknow.authenticaionserver.domain.account.repository.oauth.OauthPlatformRepository;
 import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 
-import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -98,8 +94,8 @@ public class OauthAccountServiceImpl implements OauthAccountService {
         HttpEntity<Map<String, String>> request = new HttpEntity<>(httpHeaders);
         httpHeaders.add("Authorization", "Bearer " + accessToken);
 
-        ResponseEntity<Map> response = restTemplate.exchange(oauthAccountProperties.getUserInfoUrl().get(platform), HttpMethod.GET,request, Map.class);
-        System.out.println(response.getBody())  ;
+        ResponseEntity<Map> response = restTemplate.exchange(oauthAccountProperties.getUserInfoUrl().get(platform), HttpMethod.GET, request, Map.class);
+        System.out.println(response.getBody());
         return response.getBody().get("id").toString();
     }
 
@@ -107,6 +103,7 @@ public class OauthAccountServiceImpl implements OauthAccountService {
         OauthAccount account = OauthAccount.builder()
                 .oauthId(platformId)
                 .platform(oauthPlatformRepository.findByPlatformType(OauthPlatformType.KAKAO))
+                .nickname(platform + "유저#" + RandomStringUtils.random(4, true, true))
                 .build();
         AccountDetails accountDetails = new AccountDetails();
         account.setAccountDetails(accountDetails);

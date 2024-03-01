@@ -35,6 +35,7 @@ public class GetInfoTest extends IntegrationTest {
 
             accessToken = jwtService.generateAccessToken(account);
         }
+
         @Nested
         @DisplayName("토큰이 유효한 경우")
         class Context_tokenIsValid {
@@ -42,11 +43,12 @@ public class GetInfoTest extends IntegrationTest {
             @DisplayName("내 정보를 반환한다.")
             void it_returns_myInfo() throws Exception {
                 ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/account")
-                        .header("Authorization", "Bearer " + accessToken));
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType("application/json"));
 
                 result.andExpect(status().isOk());
 
-                result.andExpect(jsonPath("id").value(id));
+                result.andExpect(jsonPath("data.id").value(id));
             }
         }
 
@@ -54,6 +56,7 @@ public class GetInfoTest extends IntegrationTest {
         @DisplayName("토큰이 유효하지 않은 경우")
         class Context_tokenIsNotValid {
             String accessToken = "invalidToken";
+
             @Test
             @DisplayName("401 에러를 반환한다.")
             void it_returns_401Error() throws Exception {

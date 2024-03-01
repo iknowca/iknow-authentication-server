@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
-import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetails;
+import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,7 +22,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        Account account = ((CustomUserDetails)authentication.getPrincipal()).getAccount();
+        Account account = ((CustomUserDetails) authentication.getPrincipal()).getAccount();
 
         String accessToken = jwtService.generateAccessToken(account);
         String refreshToken = jwtService.generateRefreshToken(account);

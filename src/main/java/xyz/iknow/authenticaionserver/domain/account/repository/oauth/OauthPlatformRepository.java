@@ -3,7 +3,6 @@ package xyz.iknow.authenticaionserver.domain.account.repository.oauth;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatform;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
 

@@ -17,13 +17,14 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class JwtServiceImpl implements JwtService{
+public class JwtServiceImpl implements JwtService {
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpiration;
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
     private final JwtUtility jwtUtility;
     private final TokenService tokenService;
+
     @Override
     public String generateAccessToken(Account account) {
         Map<String, Object> valueMap = Map.of("accountId", account.getId());
@@ -36,6 +37,7 @@ public class JwtServiceImpl implements JwtService{
         tokenService.save(token);
         return accessToken;
     }
+
     @Override
     public String generateRefreshToken(Account account) {
         Map<String, Object> valueMap = Map.of("accountId", account.getId());
@@ -48,6 +50,7 @@ public class JwtServiceImpl implements JwtService{
         tokenService.save(token);
         return refreshToken;
     }
+
     @Override
     public Map<String, Object> parseToken(String token) {
         Map<String, Object> jwtValueMap;
@@ -58,8 +61,8 @@ public class JwtServiceImpl implements JwtService{
         }
 
         Instant now = ZonedDateTime.now().toInstant();
-        Instant exp = Instant.ofEpochSecond( Long.parseLong(jwtValueMap.get("exp").toString()));
-        if(now.isAfter(exp)){
+        Instant exp = Instant.ofEpochSecond(Long.parseLong(jwtValueMap.get("exp").toString()));
+        if (now.isAfter(exp)) {
             throw new TokenException(TokenException.TOKEN_ERROR.EXPIRED_TOKEN);
         }
         return jwtValueMap;

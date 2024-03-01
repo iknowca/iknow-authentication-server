@@ -44,25 +44,26 @@ public class SecurityConfig {
     private List<String> authenticatedPath;
     @Value("${authorization.match.path.PERMITALL}")
     private List<String> permitAllPath;
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-            http.addFilterBefore(characterEncodingFilter(), CsrfFilter.class);
-            http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
-            http.csrf(csrf ->csrf.disable());
-            http.formLogin(formLogin -> formLogin.disable());
-            http.authenticationManager(buildCustomAuthenticationManager(http));
-            http.logout(logout -> logout.disable());
-            http.addFilterBefore(loginFilter(buildCustomAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class);
-            http.addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class);
-            http.addFilterBefore(accessTokenRefreshFilter(), LoginFilter.class);
-            http.authorizeHttpRequests((authorizeRequests) -> {
-                authorizeRequests.requestMatchers(authenticatedPath.toArray(new String[0])).authenticated();
-                authorizeRequests.requestMatchers(anonymousPath.toArray(new String[0])).anonymous();
-                authorizeRequests.requestMatchers(permitAllPath.toArray(new String[0])).permitAll();
-            });
+        http.addFilterBefore(characterEncodingFilter(), CsrfFilter.class);
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        http.csrf(csrf -> csrf.disable());
+        http.formLogin(formLogin -> formLogin.disable());
+        http.authenticationManager(buildCustomAuthenticationManager(http));
+        http.logout(logout -> logout.disable());
+        http.addFilterBefore(loginFilter(buildCustomAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(accessTokenRefreshFilter(), LoginFilter.class);
+        http.authorizeHttpRequests((authorizeRequests) -> {
+            authorizeRequests.requestMatchers(authenticatedPath.toArray(new String[0])).authenticated();
+            authorizeRequests.requestMatchers(anonymousPath.toArray(new String[0])).anonymous();
+            authorizeRequests.requestMatchers(permitAllPath.toArray(new String[0])).permitAll();
+        });
 
-            return http.build();
+        return http.build();
     }
 
     @Bean
@@ -72,6 +73,7 @@ public class SecurityConfig {
         filter.setForceEncoding(true);
         return filter;
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -94,7 +96,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public LoginFilter loginFilter(AuthenticationManager authenticationManager){
+    public LoginFilter loginFilter(AuthenticationManager authenticationManager) {
         LoginFilter loginFilter = new LoginFilter("/account/login");
         loginFilter.setAuthenticationManager(authenticationManager);
         loginFilter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtService));

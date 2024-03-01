@@ -30,8 +30,8 @@ public class DBInitializer {
             Set<OauthPlatformType> platformTypes = oauthPlatformRepository.findAll().stream()
                     .map(OauthPlatform::getPlatformType)
                     .collect(Collectors.toSet());
-            for(OauthPlatformType platformType: OauthPlatformType.values()) {
-                if(!platformTypes.contains(platformType)) {
+            for (OauthPlatformType platformType : OauthPlatformType.values()) {
+                if (!platformTypes.contains(platformType)) {
                     OauthPlatform oauthPlatform = new OauthPlatform(platformType);
                     oauthPlatformRepository.save(oauthPlatform);
                 }

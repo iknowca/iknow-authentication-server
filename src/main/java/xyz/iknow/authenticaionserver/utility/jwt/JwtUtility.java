@@ -3,13 +3,14 @@ package xyz.iknow.authenticaionserver.utility.jwt;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatchers;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @PropertySource("classpath:security.properties")
 @Component
@@ -47,6 +48,7 @@ public class JwtUtility {
                 .getBody();
         return claims;
     }
+
     public boolean isTokenCheckFilterExcludeUri(String uri) {
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         for (String path : permitAllPath) {

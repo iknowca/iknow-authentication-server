@@ -1,7 +1,6 @@
 package xyz.iknow.authenticaionserver.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -47,7 +46,9 @@ public class RedisCacheConfig {
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return redisTemplate;
     }
-    @Bean CacheManager cacheManager(RedisConnectionFactory redisCacheConnectionFactory) {
+
+    @Bean
+    CacheManager cacheManager(RedisConnectionFactory redisCacheConnectionFactory) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofSeconds(60))
                 .disableCachingNullValues()
