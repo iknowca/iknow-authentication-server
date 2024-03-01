@@ -3,7 +3,7 @@ package xyz.iknow.authenticaionserver.domain.account.service;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.http.ResponseEntity;
-import xyz.iknow.authenticaionserver.domain.account.dto.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.dto.LocalAccountDTO;
 import xyz.iknow.authenticaionserver.test.UnitTest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -15,7 +15,7 @@ public class AccountCreateAccountTest extends UnitTest {
     @Nested
     @DisplayName("AccountDTO가 주어졌을 때")
     class Describe_givenAccountDTO {
-        AccountDTO accountDTO = new AccountDTO();
+        LocalAccountDTO accountDTO = new LocalAccountDTO();
         String email;
 
         @BeforeEach

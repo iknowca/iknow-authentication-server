@@ -1,17 +1,20 @@
 package xyz.iknow.authenticaionserver.domain.account.dto;
 
 import lombok.*;
-import xyz.iknow.authenticaionserver.domain.account.dto.oauth.OauthPlatformDTO;
+import lombok.experimental.SuperBuilder;
+import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 
 @NoArgsConstructor
-@Builder
+@SuperBuilder
+@Setter
+@Getter
 @AllArgsConstructor
-@Data
 public class AccountDTO {
     private Long id;
-    private String email;
-    private String password;
     private String nickname;
-    private String accountType;
-    private OauthPlatformDTO oauthPlatform;
+    private AccountDetailsDTO accountDtails;
+    public AccountDTO(Account account) {
+        this.id = account.getId();
+        this.nickname = account.getNickname();
+    }
 }

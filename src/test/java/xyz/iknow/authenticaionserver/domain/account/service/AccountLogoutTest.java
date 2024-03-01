@@ -1,13 +1,12 @@
 package xyz.iknow.authenticaionserver.domain.account.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import xyz.iknow.authenticaionserver.domain.account.dto.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.dto.LocalAccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetails;
 import xyz.iknow.authenticaionserver.test.AccountGenerator;
@@ -25,7 +24,7 @@ public class AccountLogoutTest extends UnitTest {
         String email = AccountGenerator.getTestEmail();
         String password = AccountGenerator.getTestPassword();
         mockMvc.perform(post("/account/join")
-                .content(objectMapper.writeValueAsString(AccountDTO.builder()
+                .content(objectMapper.writeValueAsString(LocalAccountDTO.builder()
                         .email(email)
                         .password(password)
                         .build()))

@@ -5,20 +5,22 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import xyz.iknow.authenticaionserver.domain.account.dto.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.dto.LocalAccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.dto.UpdateAccountForm;
+import xyz.iknow.authenticaionserver.domain.account.dto.oauth.OauthAccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.dto.oauth.OauthPlatformDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDetails;
-import xyz.iknow.authenticaionserver.domain.account.dto.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
-import xyz.iknow.authenticaionserver.domain.account.dto.UpdateAccountForm;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
-import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 import xyz.iknow.authenticaionserver.domain.account.repository.oauth.OauthPlatformRepository;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetails;
@@ -46,7 +48,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public ResponseEntity<Map> createAccount(AccountDTO request) {
+    public ResponseEntity<Map> createAccount(LocalAccountDTO request) {
         String email = request.getEmail();
         String password = request.getPassword();
 
@@ -62,6 +64,7 @@ public class AccountServiceImpl implements AccountService {
         LocalAccount account = LocalAccount.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
+                .nickname("무명회원#"+RandomStringUtils.random(4))
                 .build();
 
         AccountDetails accountDetails = new AccountDetails();
@@ -76,25 +79,24 @@ public class AccountServiceImpl implements AccountService {
     public ResponseEntity<AccountDTO> getMyInfo() {
         Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
 
-        AccountDTO accountDTO = AccountDTO.builder()
-                .id(account.getId())
-                .nickname(account.getNickname())
-                .accountType(account.getClass().getSimpleName())
-                .build();
+        AccountDTO accountDTO;
         if (account instanceof LocalAccount) {
-            accountDTO.setEmail(((LocalAccount) account).getEmail());
+            accountDTO = new LocalAccountDTO((LocalAccount) account);
+        } else if (account instanceof OauthAccount) {
+            accountDTO = new OauthAccountDTO((OauthAccount) account);
+
+            OauthPlatformDTO oauthPlatformDTO = new OauthPlatformDTO(accountRepository.findOauthPlatformByPlatformTypeAndOauthId(account.getId()));
+            ((OauthAccountDTO) accountDTO).setOauthPlatform(oauthPlatformDTO);
         }
-        if (account instanceof OauthAccount) {
-            OauthPlatformType platformType = oauthPlatformRepository.findByAccountId(account.getId());
-            OauthPlatformDTO oauthPlatformDTO = new OauthPlatformDTO();
-            oauthPlatformDTO.setPlatformType(OauthPlatformType.valueOf(platformType.name()));
-            accountDTO.setOauthPlatform(oauthPlatformDTO);
+        else {
+            return ResponseEntity.badRequest().build();
         }
 
         return ResponseEntity.ok(accountDTO);
     }
 
     @Override
+    @Transactional
     public ResponseEntity<Map> updateMyInfo(UpdateAccountForm request) {
         Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
 
@@ -113,19 +115,17 @@ public class AccountServiceImpl implements AccountService {
                 return ResponseEntity.badRequest().body(Map.of("message", "소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다."));
             }
         }
-        accountRepository.save(account);
-        AccountDTO accountDTO = AccountDTO.builder()
-                .id(account.getId())
-                .nickname(account.getNickname())
-                .build();
+        account = accountRepository.save(account);
+        AccountDTO accountDTO;
         if (account instanceof LocalAccount) {
-            accountDTO.setEmail(((LocalAccount) account).getEmail());
-        }
-        if (account instanceof OauthAccount) {
-            OauthPlatformType platformType = oauthPlatformRepository.findByAccountId(account.getId());
-            OauthPlatformDTO oauthPlatformDTO = new OauthPlatformDTO();
-            oauthPlatformDTO.setPlatformType(OauthPlatformType.valueOf(platformType.name()));
-            accountDTO.setOauthPlatform(oauthPlatformDTO);
+            accountDTO = new LocalAccountDTO((LocalAccount) account);
+        } else if (account instanceof OauthAccount) {
+            accountDTO = new OauthAccountDTO((OauthAccount) account);
+
+            OauthPlatformDTO oauthPlatformDTO = new OauthPlatformDTO(((OauthAccount) account).getPlatform());
+            ((OauthAccountDTO) accountDTO).setOauthPlatform(oauthPlatformDTO);
+        } else {
+            return ResponseEntity.badRequest().build();
         }
 
         return ResponseEntity.ok().body(Map.of("message", "정보가 변경되었습니다.", "status", "success",

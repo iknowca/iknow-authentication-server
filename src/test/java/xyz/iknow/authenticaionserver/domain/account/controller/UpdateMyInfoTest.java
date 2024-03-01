@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import xyz.iknow.authenticaionserver.domain.account.dto.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.dto.LocalAccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
@@ -91,7 +92,7 @@ public class UpdateMyInfoTest extends IntegrationTest {
             class Context_passwordOnly {
                 @BeforeEach
                 void setUp() {
-                    request = AccountDTO.builder()
+                    request = LocalAccountDTO.builder()
                             .password("newPassword")
                             .build();
                 }
@@ -116,7 +117,7 @@ public class UpdateMyInfoTest extends IntegrationTest {
                 class Context_oauthAccount {
                     @BeforeEach
                     void setUp() {
-                        request = AccountDTO.builder()
+                        request = LocalAccountDTO.builder()
                                 .password("newPassword")
                                 .build();
                     }
@@ -140,7 +141,7 @@ public class UpdateMyInfoTest extends IntegrationTest {
         class Context_nicknameAndPassword {
             @BeforeEach
             void setUp() {
-                request = AccountDTO.builder()
+                request = LocalAccountDTO.builder()
                         .password("newPassword")
                         .nickname("newNickname")
                         .build();
