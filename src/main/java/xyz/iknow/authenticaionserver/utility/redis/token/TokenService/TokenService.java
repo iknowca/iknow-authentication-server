@@ -7,8 +7,12 @@ import java.util.Optional;
 
 public interface TokenService {
     AccessToken save(AccessToken token);
+
     RefreshToken save(RefreshToken token);
+
     Optional<AccessToken> findAccessTokenById(Long id);
+
     Optional<RefreshToken> findRefreshTokenById(Long id);
+
     void delete(Long id);
 }

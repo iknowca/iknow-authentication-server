@@ -1,6 +1,9 @@
 package xyz.iknow.authenticaionserver.domain.account.controller;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,6 +29,7 @@ public class ValidateEmailTest extends IntegrationTest {
                     .build();
             accountRepository.save(account);
         }
+
         String duplicatedEmail = ag.getTestEmail();
 
         @Nested
@@ -46,6 +50,7 @@ public class ValidateEmailTest extends IntegrationTest {
                         .andExpect(content().string("false"));
             }
         }
+
         @Nested
         @DisplayName("중복된 이메일을 입력하면")
         class Context_duplicated_email {

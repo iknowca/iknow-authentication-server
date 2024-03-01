@@ -7,7 +7,6 @@ import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatform;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {

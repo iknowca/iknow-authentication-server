@@ -4,34 +4,26 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import xyz.iknow.authenticaionserver.domain.account.dto.UpdateAccountForm;
+import xyz.iknow.authenticaionserver.domain.account.dto.AccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.dto.LocalAccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.dto.oauth.OauthAccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
-import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetails;
 import xyz.iknow.authenticaionserver.test.UnitTest;
 
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @DisplayName("AcccountService.updateMyInfo Test")
 public class AccountUpdateMyInfoTest extends UnitTest {
     Account account;
-    UpdateAccountForm request;
-    @BeforeEach
-    void setUp() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-        request = new UpdateAccountForm();
-    }
+    AccountDTO request;
+
     @Nested
     @DisplayName("클라이언트가 내 정보를 수정하려고 할 때")
     class Describe_updateMyInfo {
+
         @Nested
         @DisplayName("Local 계정인 경우")
         class Context_whenLocalAccount {
@@ -43,16 +35,19 @@ public class AccountUpdateMyInfoTest extends UnitTest {
                         .nickname("nickname")
                         .build();
                 account = accountRepository.save(localAccount);
-                when(authentication.getPrincipal()).thenReturn(CustomUserDetails.builder().account(account).build());
 
+                request = new LocalAccountDTO();
+                request.setType("local");
             }
+
             @Nested
             @DisplayName("비밀번호를 수정하려고 할 때")
             class Context_whenUpdatePassword {
                 @BeforeEach
                 void setUp() {
-                    request.setPassword("newPassword");
+                    ((LocalAccountDTO) request).setPassword("newPassword");
                 }
+
                 @Nested
                 @DisplayName("닉네임을 수정하려고 할 때")
                 class Context_whenUpdateNickname {
@@ -60,20 +55,29 @@ public class AccountUpdateMyInfoTest extends UnitTest {
                     void setUp() {
                         request.setNickname("newNickname");
                     }
+
                     @Test
-                    @DisplayName("성공 메시지를 반환한다")
+                    @DisplayName("accountDTO를 반환한다")
                     void it_returnsSuccessMessage() {
-                        ResponseEntity<Map> response = accountService.updateMyInfo(request);
-                        assertThat(response.getStatusCode().is2xxSuccessful());
+                        LocalAccountDTO accountDTO = (LocalAccountDTO) accountService.updateMyInfo(account, request);
+
+                        assertThat(accountDTO.getNickname()).isEqualTo("newNickname");
+                        assertThat(accountDTO.getPassword()).isNull();
+                        assertThat(accountDTO.getEmail()).isEqualTo("email");
                     }
                 }
+
                 @Test
-                @DisplayName("성공 메시지를 반환한다")
+                @DisplayName("accountDTO를 반환한다")
                 void it_returnsSuccessMessage() {
-                    ResponseEntity<Map> response = accountService.updateMyInfo(request);
-                    assertThat(response.getStatusCode().is2xxSuccessful());
+                    LocalAccountDTO accountDTO = (LocalAccountDTO) accountService.updateMyInfo(account, request);
+
+                    assertThat(accountDTO.getNickname()).isEqualTo("nickname");
+                    assertThat(accountDTO.getPassword()).isNull();
+                    assertThat(accountDTO.getEmail()).isEqualTo("email");
                 }
             }
+
             @Nested
             @DisplayName("닉네임을 수정하려고 할 때")
             class Context_whenUpdateNickname {
@@ -83,6 +87,7 @@ public class AccountUpdateMyInfoTest extends UnitTest {
                 }
             }
         }
+
         @Nested
         @DisplayName("Oauth 계정인 경우")
         class Context_whenOauthAccount {
@@ -93,9 +98,11 @@ public class AccountUpdateMyInfoTest extends UnitTest {
                         .platform(oauthPlatformRepository.findByPlatformType(OauthPlatformType.KAKAO))
                         .nickname("nickname")
                         .build());
-                when(authentication.getPrincipal()).thenReturn(CustomUserDetails.builder().account(account).build());
 
+                request = new OauthAccountDTO();
+                request.setType("oauth");
             }
+
             @Nested
             @DisplayName("닉네임을 수정하려고 할 때")
             class Context_whenUpdateNickname {
@@ -103,11 +110,13 @@ public class AccountUpdateMyInfoTest extends UnitTest {
                 void setUp() {
                     request.setNickname("newNickname");
                 }
+
                 @Test
                 @DisplayName("성공 메시지를 반환한다")
                 void it_returnsSuccessMessage() {
-                    ResponseEntity<Map> response = accountService.updateMyInfo(request);
-                    assertThat(response.getStatusCode().is2xxSuccessful());
+                    OauthAccountDTO accountDTO = (OauthAccountDTO) accountService.updateMyInfo(account, request);
+
+                    assertThat(accountDTO.getNickname()).isEqualTo("newNickname");
                 }
             }
         }

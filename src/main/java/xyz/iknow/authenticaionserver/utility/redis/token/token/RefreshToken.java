@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
-import java.io.Serializable;
-
 @RedisHash("refresh_token")
 @NoArgsConstructor
 @AllArgsConstructor

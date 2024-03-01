@@ -19,6 +19,7 @@ public class LoginTest extends IntegrationTest {
     class Describe_account_login {
         String email;
         String password;
+
         @BeforeEach
         void setUp() {
             email = ag.getTestEmail();
@@ -48,7 +49,7 @@ public class LoginTest extends IntegrationTest {
                 result.andExpect(status().isOk());
                 result.andExpect(cookie().exists("refreshToken"));
                 result.andExpect(jsonPath("$.accessToken").exists());
-                
+
             }
         }
 
@@ -75,6 +76,7 @@ public class LoginTest extends IntegrationTest {
         @Order(1)
         class Context_WhenEmailIsNotExists {
             String invalidEmail = ag.getTestEmail();
+
             @Test
             @DisplayName("로그인에 실패한다")
             void it_returns_email_not_exists_error() throws Exception {

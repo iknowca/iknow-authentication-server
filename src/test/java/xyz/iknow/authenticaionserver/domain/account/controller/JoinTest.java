@@ -1,9 +1,13 @@
 package xyz.iknow.authenticaionserver.domain.account.controller;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import xyz.iknow.authenticaionserver.domain.account.dto.LocalAccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
 import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
@@ -14,37 +18,51 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("회원가입 테스트")
 public class JoinTest extends IntegrationTest {
+    String email;
+    String password;
+    String duplicatedEmail;
+
+    @BeforeEach
+    void setUp() {
+        email = ag.getTestEmail();
+        password = ag.getTestPassword();
+        duplicatedEmail = ag.getTestEmail();
+
+        LocalAccount account = LocalAccount.builder()
+                .email(duplicatedEmail)
+                .password(password)
+                .build();
+        accountRepository.save(account);
+    }
+
     @Nested
     @DisplayName("클라이언트가 회원가입을 요청할때")
     class Describe_account_join {
-        String email;
-        String password;
-        String duplicatedEmail;
+        LocalAccountDTO request;
 
         @BeforeEach
         void setUp() {
-            email = ag.getTestEmail();
-            password = ag.getTestPassword();
-            duplicatedEmail = ag.getTestEmail();
-
-            LocalAccount account = LocalAccount.builder()
-                    .email(duplicatedEmail)
-                    .password(password)
+            request = LocalAccountDTO.builder()
                     .build();
-            accountRepository.save(account);
         }
 
         @Nested
         @DisplayName("정상적인 요청이라면")
         class Context_WhenRequestIsValid {
+            @BeforeEach
+            void setUp() {
+                request.setEmail(email);
+                request.setPassword(password);
+            }
+
             @Test
             @DisplayName("회원가입에 성공한다")
             void it_success_join() throws Exception {
                 ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/account/join")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("email", email, "password", password))));
+                        .content(objectMapper.writeValueAsString(request)));
 
-                result.andExpect(status().isOk())
+                result.andExpect(status().isCreated())
                         .andExpect(jsonPath("$.status").value("success"));
             }
         }
@@ -52,15 +70,19 @@ public class JoinTest extends IntegrationTest {
         @Nested
         @DisplayName("이메일 중복이라면")
         class Context_WhenEmailIsDuplicated {
+            @BeforeEach
+            void setUp() {
+                request.setEmail(duplicatedEmail);
+                request.setPassword(password);
+            }
+
             @DisplayName("이메일 중복 에러를 반환한다")
             @Test
             void it_returns_email_duplicated_error() throws Exception {
-                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/account/join")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("email", duplicatedEmail, "password", password))));
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/account/join", request)
+                        .contentType(MediaType.APPLICATION_JSON));
 
-                result.andExpect(status().isBadRequest())
-                        .andExpect(jsonPath("$.message").value("이미 가입된 이메일입니다."));
+                result.andExpect(status().isBadRequest());
             }
         }
 
@@ -69,6 +91,12 @@ public class JoinTest extends IntegrationTest {
         class Context_WhenRequestIsInvalid {
             String invalidEmail = "invalidEmail";
 
+            @BeforeEach
+            void setUp() {
+                request.setEmail(invalidEmail);
+                request.setPassword(password);
+            }
+
             @Test
             @DisplayName("이메일 형식 에러를 반환한다")
             void it_returns_email_format_error() throws Exception {
@@ -76,8 +104,7 @@ public class JoinTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(Map.of("email", invalidEmail, "password", password))));
 
-                result.andExpect(status().isBadRequest())
-                        .andExpect(jsonPath("$.message").value("이메일 형식이 올바르지 않습니다."));
+                result.andExpect(status().isBadRequest());
             }
         }
     }

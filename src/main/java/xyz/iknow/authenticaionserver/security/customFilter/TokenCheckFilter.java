@@ -10,13 +10,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetailsService;
 import xyz.iknow.authenticaionserver.security.jwt.exception.TokenException;
 import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
-import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetailsService;
 import xyz.iknow.authenticaionserver.utility.jwt.JwtUtility;
 
 import java.io.IOException;
 import java.util.Map;
+
 @RequiredArgsConstructor
 public class TokenCheckFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
@@ -41,7 +42,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
         Map<String, Object> jwtValueMap;
 
         try {
-            if ( token == null) {
+            if (token == null) {
                 throw new TokenException(TokenException.TOKEN_ERROR.NOT_FOUND_TOKEN);
             }
             if (!token.startsWith("Bearer ")) {

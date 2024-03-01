@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
-import xyz.iknow.authenticaionserver.test.AccountGenerator;
 import xyz.iknow.authenticaionserver.test.UnitTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,7 +15,7 @@ public class AccountValidateEmailTest extends UnitTest {
     @DisplayName("Given email")
     class Describe_givenEmail {
 
-        String email = AccountGenerator.getTestEmail();
+        String email = ag.getTestEmail();
 
         @Nested
         @DisplayName("When email is valid")
@@ -30,12 +29,14 @@ public class AccountValidateEmailTest extends UnitTest {
                     localAccount.setEmail(email);
                     accountRepository.save(localAccount);
                 }
+
                 @Test
                 @DisplayName("Then return false")
                 void it_returnsFalse() {
                     assertThat(!accountService.validateEamil(email));
                 }
             }
+
             @Nested
             @DisplayName("When email is not duplicated")
             class Context_emailIsNotDuplicated {
@@ -54,6 +55,7 @@ public class AccountValidateEmailTest extends UnitTest {
             void setup() {
                 email = "invalidEmail";
             }
+
             @Test
             @DisplayName("Then return false")
             void it_returnsFalse() {

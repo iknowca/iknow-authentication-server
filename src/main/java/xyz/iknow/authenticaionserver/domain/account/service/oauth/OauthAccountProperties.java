@@ -1,6 +1,5 @@
 package xyz.iknow.authenticaionserver.domain.account.service.oauth;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;

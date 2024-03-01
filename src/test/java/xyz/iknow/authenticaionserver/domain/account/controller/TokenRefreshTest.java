@@ -25,10 +25,7 @@ public class TokenRefreshTest extends IntegrationTest {
         void setUp() {
             email = ag.getTestEmail();
             password = ag.getTestPassword();
-            LocalAccount account = LocalAccount.builder()
-                    .email(email)
-                    .password(passwordEncoder.encode(ag.getTestPassword()))
-                    .build();
+            LocalAccount account = LocalAccount.builder().email(email).password(passwordEncoder.encode(ag.getTestPassword())).build();
             accountRepository.save(account);
 
             String refreshToken = jwtService.generateRefreshToken(account);
@@ -43,8 +40,7 @@ public class TokenRefreshTest extends IntegrationTest {
                 @Test
                 @DisplayName("새로운 액세스 토큰을 반환한다")
                 void it_returns_newAccessToken() throws Exception {
-                    ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/jwt/refresh")
-                            .cookie(new Cookie("refreshToken", refreshToken)));
+                    ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/jwt/refresh").cookie(new Cookie("refreshToken", refreshToken)));
 
                 }
             }

@@ -1,6 +1,5 @@
 package xyz.iknow.authenticaionserver.domain.account.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -8,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import xyz.iknow.authenticaionserver.domain.account.dto.LocalAccountDTO;
+import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 import java.util.Map;
@@ -23,44 +24,40 @@ public class WithdrawAccountTest extends IntegrationTest {
         String password;
         String accessToken;
 
-        @BeforeEach
-        void setUp() throws Exception {
-            email = ag.getTestEmail();
-            password = ag.getTestPassword();
-
-            String responseContent;
-
-            mockMvc.perform(MockMvcRequestBuilders.post("/account/join")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(Map.of("email", email, "password", password))));
-            mockMvc.perform(MockMvcRequestBuilders.post("/account/login")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(Map.of("email", email, "password", password))))
-                    .andDo(result -> {
-                        JsonNode jsonNode = objectMapper.readTree(result.getResponse().getContentAsString());
-                        accessToken = jsonNode.get("accessToken").asText();
-                    });
-        }
-
         @Nested
         @DisplayName("정상적인 요청이면")
         class Context_WhenRequestIsValid {
+            @BeforeEach
+            void setUp() throws Exception {
+                email = ag.getTestEmail();
+                password = ag.getTestPassword();
+
+                LocalAccountDTO joinRequest = LocalAccountDTO.builder()
+                        .email(email)
+                        .password(password)
+                        .build();
+
+                accountService.createAccount(joinRequest);
+                Account account = accountRepository.findByEmail(email).get();
+                accessToken = jwtService.generateAccessToken(account);
+            }
 
             @Test
             @DisplayName("회원 탈퇴에 성공한다")
             void It_success_withdrawAccount() throws Exception {
                 ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete("/account")
-                        .header("Authorization", accessToken));
-                result.andExpect(status().isOk());
+                        .header("Authorization", "Bearer " + accessToken));
+                result.andExpect(status().isGone());
             }
+
             @Test
             @DisplayName("회원 탈퇴 후 로그인을 시도하면 401 Unauthorized를 응답한다")
             void It_responds_401Unauthorized() throws Exception {
                 mockMvc.perform(MockMvcRequestBuilders.delete("/account")
-                        .header("Authorization", accessToken));
+                        .header("Authorization", "Bearer " + accessToken));
                 mockMvc.perform(MockMvcRequestBuilders.post("/account/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("email", email, "password", password))))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(Map.of("email", email, "password", password))))
                         .andExpect(status().isUnauthorized());
             }
         }

@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 @EnableRedisRepositories(basePackages = "xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository", redisTemplateRef = "redisTemplate")
-public interface RefreshTokenRepository extends CrudRepository<RefreshToken, Long>{
+public interface RefreshTokenRepository extends CrudRepository<RefreshToken, Long> {
     Optional<RefreshToken> findById(Long id);
 }

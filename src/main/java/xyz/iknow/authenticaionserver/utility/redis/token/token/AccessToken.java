@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
-import org.springframework.data.redis.core.index.Indexed;
 
 import java.io.Serializable;
 
@@ -16,7 +15,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 @Builder
-public class AccessToken implements Serializable{
+public class AccessToken implements Serializable {
 
     @Id
     private Long id;

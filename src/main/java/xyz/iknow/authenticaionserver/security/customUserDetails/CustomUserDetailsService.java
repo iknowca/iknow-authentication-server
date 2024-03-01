@@ -20,12 +20,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     final AccountRepository accountRepository;
+
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<LocalAccount> maybeAccount = accountRepository.findByEmail(email);
-        if(maybeAccount.isEmpty()) {
-            throw new UsernameNotFoundException("There are no account matching the email: "+email);
+        if (maybeAccount.isEmpty()) {
+            throw new UsernameNotFoundException("There are no account matching the email: " + email);
         }
         LocalAccount account = maybeAccount.get();
 
@@ -33,7 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .username(account.getEmail())
                 .password(account.getPassword())
                 .account(account)
-                .authorities(Collections.singleton(new SimpleGrantedAuthority("ROLE_"+"USER")))
+                .authorities(Collections.singleton(new SimpleGrantedAuthority("ROLE_" + "USER")))
                 .isEnabled(true)
                 .isCredentialsNonExpired(true)
                 .isAccountNonLocked(true)
@@ -43,14 +44,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public UserDetails loadUserByAccountId(Long accountId) {
         Optional<Account> maybeAccount = accountRepository.findById(accountId);
-        if(maybeAccount.isEmpty()) {
-            throw new UsernameNotFoundException("There are no account matching the accountId: "+accountId);
+        if (maybeAccount.isEmpty()) {
+            throw new UsernameNotFoundException("There are no account matching the accountId: " + accountId);
         }
         Account account = maybeAccount.get();
 
         return CustomUserDetails.builder()
                 .account(account)
-                .authorities(Collections.singleton(new SimpleGrantedAuthority("ROLE_"+"USER")))
+                .authorities(Collections.singleton(new SimpleGrantedAuthority("ROLE_" + "USER")))
                 .isEnabled(true)
                 .isCredentialsNonExpired(true)
                 .isAccountNonLocked(true)
