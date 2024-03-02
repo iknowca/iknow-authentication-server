@@ -17,6 +17,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import xyz.iknow.authenticaionserver.domain.account.entity.AccountDetails;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
+import xyz.iknow.authenticaionserver.domain.account.exception.AccountException;
 import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository;
 import xyz.iknow.authenticaionserver.domain.account.repository.oauth.OauthPlatformRepository;
 import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
@@ -35,9 +36,9 @@ public class OauthAccountServiceImpl implements OauthAccountService {
     private final RestTemplate restTemplate;
 
     @Override
-    public ResponseEntity<Map> getOauthUrl(String platform) {
+    public String getOauthUrl(String platform) {
         if (Arrays.stream(OauthPlatformType.values()).noneMatch(oauthPlatformType -> oauthPlatformType.name().equals(platform.toUpperCase()))) {
-            return ResponseEntity.badRequest().body(Map.of("status", "fail", "message", platform + " is not supported"));
+            throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_PLATFORM);
         }
 
         final String url = oauthAccountProperties.getUrl().get(platform);
@@ -45,14 +46,14 @@ public class OauthAccountServiceImpl implements OauthAccountService {
         final String redirectUri = oauthAccountProperties.getRedirectUri().get(platform);
 
         String loginUrl = url + "?client_id=" + clientId + "&redirect_uri=" + redirectUri + "&response_type=code";
-        return ResponseEntity.ok(Map.of("url", loginUrl, "platform", platform, "status", "success"));
+        return loginUrl;
     }
 
     @Override
-    public ResponseEntity<Map> login(String platform, String code) {
+    public String login(String platform, String code) {
 
         if (Arrays.stream(OauthPlatformType.values()).noneMatch(oauthPlatformType -> oauthPlatformType.name().equals(platform.toUpperCase()))) {
-            return ResponseEntity.badRequest().body(Map.of("status", "fail", "message", platform + " is not supported"));
+            throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_PLATFORM);
         }
 
         String oauthAccessToken = getAccessToken(platform, code);
@@ -66,7 +67,7 @@ public class OauthAccountServiceImpl implements OauthAccountService {
             account = maybeAccount.get();
         }
         String accessToken = issueToken(account);
-        return ResponseEntity.ok(Map.of("accessToken", "Bearer " + accessToken, "status", "success"));
+        return "Bearer " + accessToken;
     }
 
     public String getAccessToken(String platform, String code) {

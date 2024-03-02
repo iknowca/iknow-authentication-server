@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Map;
 
 public interface OauthAccountService {
-    ResponseEntity<Map> getOauthUrl(String platform);
+    String getOauthUrl(String platform);
 
-    ResponseEntity<Map> login(String platform, String code);
+    String login(String platform, String code);
 }

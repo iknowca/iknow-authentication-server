@@ -36,8 +36,10 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtUtility jwtUtility;
     private final TokenService tokenService;
-    @Value("${host.frontend.imf}")
-    private String frontendHostUrl;
+    @Value("${url.ss.swagger}")
+    private String swaggerUrl;
+    @Value("${url.ss.frontend}")
+    private String frontendUrl;
     @Value("${authorization.match.path.ANONYMOUS}")
     private List<String> anonymousPath;
     @Value("${authorization.match.path.AUTHENTICATED}")
@@ -79,7 +81,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of(frontendHostUrl));
+        config.setAllowedOrigins(List.of(frontendUrl, swaggerUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
 
