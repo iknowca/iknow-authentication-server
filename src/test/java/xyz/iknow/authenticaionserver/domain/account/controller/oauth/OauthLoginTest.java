@@ -21,8 +21,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("OauthLogin 테스트")
 public class OauthLoginTest extends IntegrationTest {
@@ -65,7 +64,8 @@ public class OauthLoginTest extends IntegrationTest {
 
                     ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/account/oauth/callback/" + platform + "?code=" + authorizationCode))
                             .andExpect(status().isOk());
-                    result.andExpect(jsonPath("$.accessToken").exists());
+                    result.andExpect(jsonPath("$.data").exists());
+                    result.andExpect(cookie().exists("refreshToken"));
                     verify(restTemplate, times(1)).exchange(eq(oauthAccountProperties.getTokenUrl().get(platform)), eq(HttpMethod.POST), any(), eq(Map.class));
                     verify(restTemplate, times(1)).exchange(eq(oauthAccountProperties.getUserInfoUrl().get(platform)), eq(HttpMethod.GET), any(), eq(Map.class));
                 }
@@ -94,7 +94,8 @@ public class OauthLoginTest extends IntegrationTest {
 
                     ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/account/oauth/callback/" + platform + "?code=" + authorizationCode))
                             .andExpect(status().isOk());
-                    result.andExpect(jsonPath("$.accessToken").exists());
+                    result.andExpect(jsonPath("$.data").exists());
+                    result.andExpect(cookie().exists("refreshToken"));
 
                     verify(restTemplate, times(1)).exchange(eq(oauthAccountProperties.getTokenUrl().get(platform)), eq(HttpMethod.POST), any(), eq(Map.class));
                     verify(restTemplate, times(1)).exchange(eq(oauthAccountProperties.getUserInfoUrl().get(platform)), eq(HttpMethod.GET), any(), eq(Map.class));

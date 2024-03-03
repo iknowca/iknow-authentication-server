@@ -47,7 +47,7 @@ public class WithdrawAccountTest extends IntegrationTest {
             void It_success_withdrawAccount() throws Exception {
                 ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete("/account")
                         .header("Authorization", "Bearer " + accessToken));
-                result.andExpect(status().isGone());
+                result.andExpect(status().isOk());
             }
 
             @Test

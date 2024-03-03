@@ -1,5 +1,7 @@
 package xyz.iknow.authenticaionserver.domain.account.controller;
 
+import com.jayway.jsonpath.JsonPath;
+import io.swagger.v3.core.util.Json;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,8 +14,7 @@ import xyz.iknow.authenticaionserver.test.IntegrationTest;
 
 import java.util.Map;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("이메일 계정 확인 테스트")
 public class ValidateEmailTest extends IntegrationTest {
@@ -38,16 +39,17 @@ public class ValidateEmailTest extends IntegrationTest {
             String validateEmail = ag.getTestEmail();
 
             @Test
-            @DisplayName("false를 반환한다")
+            @DisplayName("success를 반환한다")
             void it_returns_true() throws Exception {
                 System.out.println("validateEmail = " + validateEmail);
 
                 ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/account/validate-email")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("email", validateEmail))));
+                        .content(objectMapper.writeValueAsString(Map.of("email", validateEmail, "type", "local"))));
 
                 result.andExpect(status().isOk())
-                        .andExpect(content().string("false"));
+                        .andExpect(jsonPath("$.status").value("success"));
+
             }
         }
 
@@ -60,10 +62,11 @@ public class ValidateEmailTest extends IntegrationTest {
             void it_returns_false() throws Exception {
                 ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/account/validate-email")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("email", duplicatedEmail))));
+                        .content(objectMapper.writeValueAsString(Map.of("email", duplicatedEmail, "type", "local"))));
 
-                result.andExpect(status().isOk())
-                        .andExpect(content().string("true"));
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.status").value("failure"));
+
             }
         }
     }
