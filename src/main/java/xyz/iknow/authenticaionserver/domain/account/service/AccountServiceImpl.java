@@ -38,8 +38,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Boolean validateEamil(String email) {
-        Boolean result = accountRepository.existsLocalAccountByEmail(email);
-        return result;
+        if (!emailValidator.validate(email)) {
+            throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_EMAIL);
+        }
+        if (accountRepository.existsLocalAccountByEmail(email)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

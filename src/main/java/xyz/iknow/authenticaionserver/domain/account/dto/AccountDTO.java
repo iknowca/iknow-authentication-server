@@ -22,6 +22,7 @@ import xyz.iknow.authenticaionserver.domain.account.entity.Account;
         visible = true
 )
 @JsonSubTypes({
+        @JsonSubTypes.Type(value = AccountDTO.class, name = ""),
         @JsonSubTypes.Type(value = OauthAccountDTO.class, name = "oauth"),
         @JsonSubTypes.Type(value = LocalAccountDTO.class, name = "local")
 })

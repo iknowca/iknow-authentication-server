@@ -5,9 +5,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
+import xyz.iknow.authenticaionserver.domain.account.exception.AccountException;
 import xyz.iknow.authenticaionserver.test.UnitTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("AcccountService.validateEmail Test")
 public class AccountValidateEmailTest extends UnitTest {
@@ -59,7 +61,7 @@ public class AccountValidateEmailTest extends UnitTest {
             @Test
             @DisplayName("Then return false")
             void it_returnsFalse() {
-                assertThat(!accountService.validateEamil(email));
+                assertThrows(AccountException.class, ()-> accountService.validateEamil(email));
             }
         }
     }

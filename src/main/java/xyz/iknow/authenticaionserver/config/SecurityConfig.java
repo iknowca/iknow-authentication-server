@@ -36,6 +36,8 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtUtility jwtUtility;
     private final TokenService tokenService;
+    @Value("${url.ss.gateway}")
+    private String gatewayUrl;
     @Value("${url.ss.swagger}")
     private String swaggerUrl;
     @Value("${url.ss.frontend}")
@@ -81,8 +83,8 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of(frontendUrl, swaggerUrl));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
+        config.setAllowedOrigins(List.of(frontendUrl, swaggerUrl, gatewayUrl));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         config.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
