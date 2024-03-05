@@ -89,7 +89,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO updateMyInfo(Account account, AccountDTO request) {
-        if (request.getNickname().isEmpty()) {
+        if (request.getNickname() == null) {
             throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_UPDATE_REQUEST);
         } else {
             account.setNickname(request.getNickname());

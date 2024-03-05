@@ -64,7 +64,7 @@ public class OauthLoginTest extends IntegrationTest {
 
                     ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/account/oauth/callback/" + platform + "?code=" + authorizationCode))
                             .andExpect(status().isOk());
-                    result.andExpect(jsonPath("$.data").exists());
+                    result.andExpect(jsonPath("$.message").exists());
                     result.andExpect(cookie().exists("refreshToken"));
                     verify(restTemplate, times(1)).exchange(eq(oauthAccountProperties.getTokenUrl().get(platform)), eq(HttpMethod.POST), any(), eq(Map.class));
                     verify(restTemplate, times(1)).exchange(eq(oauthAccountProperties.getUserInfoUrl().get(platform)), eq(HttpMethod.GET), any(), eq(Map.class));
@@ -94,7 +94,7 @@ public class OauthLoginTest extends IntegrationTest {
 
                     ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/account/oauth/callback/" + platform + "?code=" + authorizationCode))
                             .andExpect(status().isOk());
-                    result.andExpect(jsonPath("$.data").exists());
+                    result.andExpect(jsonPath("$.message").exists());
                     result.andExpect(cookie().exists("refreshToken"));
 
                     verify(restTemplate, times(1)).exchange(eq(oauthAccountProperties.getTokenUrl().get(platform)), eq(HttpMethod.POST), any(), eq(Map.class));
