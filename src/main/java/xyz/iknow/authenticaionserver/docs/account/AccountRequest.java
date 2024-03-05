@@ -19,7 +19,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AccountRequest {
     private final OpenAPI openAPI;
-    @Bean
     public Schema JoinAccount() {
         Schema request = new Schema<Map<String, Object>>()
                 .type("object")
@@ -32,19 +31,18 @@ public class AccountRequest {
         openAPI.getComponents().addSchemas("JoinAccountRequest", request);
         return request;
     }
-    @Bean
     public Schema updateAccountRequest() {
         Schema request = new Schema<Map<String, Object>>()
                 .type("object")
                 .contentMediaType("application/json")
                 .name("update request")
-                .addProperty("type", new StringSchema().example("local").description("계정 타입").example("oauth"))
-                .addProperty("password", new StringSchema().example("P4SSW0RD"));
+                .addProperty("type", new StringSchema().example("local").description("계정 타입"))
+                .addProperty("nickname", new StringSchema().example("John")).description("닉네임");
+        request.setRequired(List.of("type"));
 
         openAPI.getComponents().addSchemas("UpdateAccountRequest", request);
         return request;
     }
-    @Bean
     public Schema validateEmailRequest() {
         Schema request = new Schema<Map<String, Object>>()
                 .type("object")
@@ -53,6 +51,18 @@ public class AccountRequest {
                 .addProperty("type", new StringSchema().example("local").description("계정 타입").example("local")
                 .addProperty("email", new StringSchema().example("test@gmail.com")));
         openAPI.getComponents().addSchemas("validateEmailRequest", request);
+        return request;
+    }
+    public Schema updatePassword() {
+        Schema request = new Schema<Map<String, Object>>()
+                .type("object")
+                .contentMediaType("application/json")
+                .name("update password request")
+                .addProperty("type", new StringSchema().example("local").description("계정 타입"))
+                .addProperty("password", new StringSchema().example("password")).description("패스워드");
+        request.setRequired(List.of("type"));
+
+        openAPI.getComponents().addSchemas("UpdateAccountPasswordRequest", request);
         return request;
     }
 }

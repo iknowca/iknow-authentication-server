@@ -74,9 +74,10 @@ public class AccountServiceImpl implements AccountService {
         AccountDTO accountDTO;
         if (account instanceof LocalAccount) {
             accountDTO = new LocalAccountDTO((LocalAccount) account);
+            accountDTO.setType("local");
         } else if (account instanceof OauthAccount) {
             accountDTO = new OauthAccountDTO((OauthAccount) account);
-
+            accountDTO.setType("oauth");
             OauthPlatformDTO oauthPlatformDTO = new OauthPlatformDTO(accountRepository.findOauthPlatformByPlatformTypeAndOauthId(account.getId()));
             ((OauthAccountDTO) accountDTO).setOauthPlatform(oauthPlatformDTO);
         } else {
@@ -87,33 +88,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
     public AccountDTO updateMyInfo(Account account, AccountDTO request) {
-        if (account instanceof LocalAccount && request instanceof LocalAccountDTO) {
-            updateLocalAccountInfo((LocalAccount) account, (LocalAccountDTO) request);
-        } else if (account instanceof OauthAccount && request instanceof OauthAccountDTO) {
-            updateOauthAccountInfo((OauthAccount) account, (OauthAccountDTO) request);
+        if (request.getNickname().isEmpty()) {
+            throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_UPDATE_REQUEST);
         } else {
-            throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_UPDATE_REQUEST);
-        }
-        if (request.getNickname() != null) {
             account.setNickname(request.getNickname());
-        }
-        account = accountRepository.save(account);
-        return getMyInfo(account);
-    }
-
-    private void updateLocalAccountInfo(LocalAccount account, LocalAccountDTO request) {
-        if (request.getPassword() == null && request.getNickname() == null) {
-            throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_UPDATE_REQUEST);
-        } else if (request.getPassword() != null) {
-            account.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
-    }
-
-    private void updateOauthAccountInfo(OauthAccount account, OauthAccountDTO request) {
-        if (request.getNickname() == null) {
-            throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_UPDATE_REQUEST);
+            account = accountRepository.save(account);
+            return getMyInfo(account);
         }
     }
 
@@ -136,5 +117,19 @@ public class AccountServiceImpl implements AccountService {
         account.getAccountDetails().setWithDraw(true);
         accountRepository.save(account);
         logout(account);
+    }
+
+    @Override
+    public AccountDTO changePassword(Account account, LocalAccountDTO request) {
+        String password = request.getPassword();
+
+        if (!(account instanceof LocalAccount)) {
+            throw new AccountException(AccountException.ACCOUNT_ERROR.SOCIAL_ACCOUNT_DID_NOT_UPDATE_PASSWORD);
+        }
+
+        ((LocalAccount) account).setPassword(passwordEncoder.encode(password));
+        account = accountRepository.save(account);
+        LocalAccountDTO localAccountDTO = new LocalAccountDTO((LocalAccount) account);
+        return localAccountDTO;
     }
 }
