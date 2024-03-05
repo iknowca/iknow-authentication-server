@@ -19,6 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AccountRequest {
     private final OpenAPI openAPI;
+    @Bean
     public Schema JoinAccount() {
         Schema request = new Schema<Map<String, Object>>()
                 .type("object")
@@ -31,6 +32,7 @@ public class AccountRequest {
         openAPI.getComponents().addSchemas("JoinAccountRequest", request);
         return request;
     }
+    @Bean
     public Schema updateAccountRequest() {
         Schema request = new Schema<Map<String, Object>>()
                 .type("object")
@@ -43,16 +45,20 @@ public class AccountRequest {
         openAPI.getComponents().addSchemas("UpdateAccountRequest", request);
         return request;
     }
+    @Bean
     public Schema validateEmailRequest() {
         Schema request = new Schema<Map<String, Object>>()
                 .type("object")
                 .contentMediaType("application/json")
                 .name("validate email request")
-                .addProperty("type", new StringSchema().example("local").description("계정 타입").example("local")
-                .addProperty("email", new StringSchema().example("test@gmail.com")));
+                .addProperty("type", new StringSchema().example("local"))
+                .addProperty("email", new StringSchema().example("test@gmail.com"));
+        request.setRequired(List.of("type", "email"));
+
         openAPI.getComponents().addSchemas("validateEmailRequest", request);
         return request;
     }
+    @Bean
     public Schema updatePassword() {
         Schema request = new Schema<Map<String, Object>>()
                 .type("object")

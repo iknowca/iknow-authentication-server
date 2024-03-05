@@ -119,6 +119,11 @@ public class AccountController {
     }
     @Operation(summary = "비밀번호 변경", description = "비밀번호 변경을 수행합니다.")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(ref = "UpdateAccountPasswordRequest")))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(ref = "userInfoResponse"))),
+            @ApiResponse(responseCode = "401", description = "로그인 필요", content = @Content(mediaType = "application/json", schema = @Schema(ref = "Unauthorized"))),
+            @ApiResponse(responseCode = "404", description = "잘못된 접근", content = @Content(mediaType = "application/json", schema = @Schema(ref = "InvalidAccount"))),
+    })
     @PatchMapping("/password")
     public ResponseEntity<MessageResponseBody> changePassword(@RequestBody LocalAccountDTO request) {
         Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
