@@ -1,6 +1,7 @@
 package xyz.iknow.authenticaionserver.test;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +18,9 @@ public class AccountGenerator {
     public Long getUniqueId() {
         uniqueId++;
         return uniqueId;
+    }
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     public String getTestPassword() {

@@ -9,5 +9,5 @@ import lombok.*;
 @Builder
 public class DTOResponseBody<T> {
     private T data;
-    private String message;
+    private String status;
 }

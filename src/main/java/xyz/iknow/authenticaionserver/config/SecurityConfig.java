@@ -84,7 +84,7 @@ public class SecurityConfig {
 
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(frontendUrl, swaggerUrl, gatewayUrl));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -121,7 +121,7 @@ public class SecurityConfig {
     @Bean
     public AccessTokenRefreshFilter accessTokenRefreshFilter() throws Exception {
         AccessTokenRefreshFilter refreshFilter = new AccessTokenRefreshFilter(jwtService, tokenService);
-        refreshFilter.setUrl("/jwt/refresh");
+        refreshFilter.setUrl("/account/jwt/refresh");
         return refreshFilter;
     }
 

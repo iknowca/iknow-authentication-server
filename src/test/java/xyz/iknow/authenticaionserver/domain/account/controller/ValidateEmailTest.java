@@ -64,7 +64,7 @@ public class ValidateEmailTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(Map.of("email", duplicatedEmail, "type", "local"))));
 
-                result.andExpect(status().isBadRequest())
+                result.andExpect(status().isOk())
                         .andExpect(jsonPath("$.status").value("failure"));
 
             }

@@ -16,4 +16,6 @@ public interface AccountService {
     void logout(Account account);
 
     void withdrawAccount(Account account);
+
+    AccountDTO changePassword(Account account, LocalAccountDTO request);
 }

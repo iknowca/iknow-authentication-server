@@ -35,8 +35,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         Gson gson = new Gson();
-        String jsonStr = gson.toJson(Map.of("accessToken", "Bearer " + accessToken));
-
+        String jsonStr = gson.toJson(Map.of("accessToken", "Bearer " + accessToken, "status", "success"));
         out.write(jsonStr);
         out.flush();
         out.close();

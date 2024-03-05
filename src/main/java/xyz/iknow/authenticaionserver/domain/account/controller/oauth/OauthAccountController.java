@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xyz.iknow.authenticaionserver.domain.account.service.oauth.OauthAccountService;
 import xyz.iknow.authenticaionserver.utility.response.DTOResponseBody;
+import xyz.iknow.authenticaionserver.utility.response.MessageResponseBody;
 
 @Tag(name = "oauth account", description = "oauth 계정 전용 API")
 @RequiredArgsConstructor
@@ -28,9 +29,9 @@ public class OauthAccountController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "oauth 플랫폼 없음", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json", schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string", example = "InvalidPlatform")))
     })
     @GetMapping("/url/{platform}")
-    public ResponseEntity<DTOResponseBody<String>> getOauthUrl(@PathVariable(required = false) String platform) {
+    public ResponseEntity<MessageResponseBody> getOauthUrl(@PathVariable(required = false) String platform) {
         String loginUrl = oauthAccountService.getOauthUrl(platform);
-        return ResponseEntity.ok(new DTOResponseBody<>(loginUrl, "success"));
+        return ResponseEntity.ok(new MessageResponseBody(loginUrl, "success"));
     }
 
     @Operation(summary = "oauth 로그인", description = "oauth 로그인을 수행합니다.")
@@ -41,8 +42,8 @@ public class OauthAccountController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "oauth 플랫폼 없음", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json", schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string", example = "InvalidPlatform")))
     })
     @GetMapping("/callback/{platform}")
-    public ResponseEntity<DTOResponseBody<String>> login(@PathVariable(required = false) String platform, @RequestParam String code) {
+    public ResponseEntity<MessageResponseBody> login(@PathVariable(required = false) String platform, @RequestParam String code) {
         String accessToken = oauthAccountService.login(platform, code);
-        return ResponseEntity.ok(new DTOResponseBody<>(accessToken, "success"));
+        return ResponseEntity.ok(new MessageResponseBody(accessToken, "success"));
     }
 }

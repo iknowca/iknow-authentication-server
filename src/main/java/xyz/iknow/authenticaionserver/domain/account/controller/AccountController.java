@@ -33,6 +33,7 @@ public class AccountController {
 
     @PostMapping(value = "/validate-email")
     @Operation(summary = "이메일 중복 검사", description = "이메일 중복 검사를 수행합니다.")
+    @Parameter(hidden = true)
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(ref = "validateEmailRequest")))
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "이메일 중복 검사 성공", content = @Content(mediaType = "application/json", schema = @Schema(ref = "MessageResponse"))),
@@ -40,8 +41,8 @@ public class AccountController {
     })
     public ResponseEntity<MessageResponseBody> validateEmail(@RequestBody LocalAccountDTO request) {
         Boolean result = accountService.validateEamil(request.getEmail());
-        return result ? ResponseEntity.ok(new MessageResponseBody("사용 가능한 이메일입니다.", "success")) :
-                ResponseEntity.badRequest().body(new MessageResponseBody("중복된 이메일입니다.", "failure"));
+        return result ? ResponseEntity.ok(new MessageResponseBody("NOT_REGISTERED_EMAIL", "success")) :
+                ResponseEntity.ok(new MessageResponseBody("REGISTERED_EMAIL", "failure"));
     }
 
     @Operation(summary = "회원 가입", description = "회원 가입을 수행합니다.")
@@ -82,7 +83,7 @@ public class AccountController {
             @ApiResponse(responseCode = "404", description = "잘못된 접근", content = @Content(mediaType = "application/json", schema = @Schema(ref = "InvalidAccount"))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(ref = "InvalidUpdateRequest"))),
     })
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<DTOResponseBody<AccountDTO>> updateMyInfo(@RequestBody AccountDTO request) {
         Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
         AccountDTO accountDTO = accountService.updateMyInfo(account, request);
@@ -115,5 +116,18 @@ public class AccountController {
         Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
         accountService.withdrawAccount(account);
         return ResponseEntity.ok().body(new MessageResponseBody("회원 탈퇴 성공", "success"));
+    }
+    @Operation(summary = "비밀번호 변경", description = "비밀번호 변경을 수행합니다.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(ref = "UpdateAccountPasswordRequest")))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(ref = "userInfoResponse"))),
+            @ApiResponse(responseCode = "401", description = "로그인 필요", content = @Content(mediaType = "application/json", schema = @Schema(ref = "Unauthorized"))),
+            @ApiResponse(responseCode = "404", description = "잘못된 접근", content = @Content(mediaType = "application/json", schema = @Schema(ref = "InvalidAccount"))),
+    })
+    @PatchMapping("/password")
+    public ResponseEntity<MessageResponseBody> changePassword(@RequestBody LocalAccountDTO request) {
+        Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
+        accountService.changePassword(account, request);
+        return ResponseEntity.ok().body(new MessageResponseBody("passwordChangeSuccessful", "success"));
     }
 }

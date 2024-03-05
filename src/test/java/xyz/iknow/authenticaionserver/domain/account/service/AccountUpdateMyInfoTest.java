@@ -1,9 +1,6 @@
 package xyz.iknow.authenticaionserver.domain.account.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import xyz.iknow.authenticaionserver.domain.account.dto.AccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.dto.LocalAccountDTO;
 import xyz.iknow.authenticaionserver.domain.account.dto.oauth.OauthAccountDTO;
@@ -11,6 +8,7 @@ import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthPlatformType;
+import xyz.iknow.authenticaionserver.domain.account.exception.AccountException;
 import xyz.iknow.authenticaionserver.test.UnitTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,103 +19,51 @@ public class AccountUpdateMyInfoTest extends UnitTest {
     AccountDTO request;
 
     @Nested
-    @DisplayName("클라이언트가 내 정보를 수정하려고 할 때")
-    class Describe_updateMyInfo {
+    @DisplayName("account와 request가 주어진다면")
+    class Describe_account_and_request {
+        String nickname;
+        String newNickname;
+        String password;
+        String email;
+        Account account;
+        AccountDTO request;
+        @BeforeEach
+        void setUp() {
+            nickname = ag.getTestNickname();
+            password = ag.getTestPassword();
+            email = ag.getTestEmail();
+            account = LocalAccount.builder()
+                    .nickname(nickname)
+                    .password(passwordEncoder.encode(password))
+                    .email(email)
+                    .build();
+            accountRepository.save(account);
 
-        @Nested
-        @DisplayName("Local 계정인 경우")
-        class Context_whenLocalAccount {
-            @BeforeEach
-            void setUp() {
-                LocalAccount localAccount = LocalAccount.builder()
-                        .email("email")
-                        .password("password")
-                        .nickname("nickname")
-                        .build();
-                account = accountRepository.save(localAccount);
-
-                request = new LocalAccountDTO();
-                request.setType("local");
-            }
-
-            @Nested
-            @DisplayName("비밀번호를 수정하려고 할 때")
-            class Context_whenUpdatePassword {
-                @BeforeEach
-                void setUp() {
-                    ((LocalAccountDTO) request).setPassword("newPassword");
-                }
-
-                @Nested
-                @DisplayName("닉네임을 수정하려고 할 때")
-                class Context_whenUpdateNickname {
-                    @BeforeEach
-                    void setUp() {
-                        request.setNickname("newNickname");
-                    }
-
-                    @Test
-                    @DisplayName("accountDTO를 반환한다")
-                    void it_returnsSuccessMessage() {
-                        LocalAccountDTO accountDTO = (LocalAccountDTO) accountService.updateMyInfo(account, request);
-
-                        assertThat(accountDTO.getNickname()).isEqualTo("newNickname");
-                        assertThat(accountDTO.getPassword()).isNull();
-                        assertThat(accountDTO.getEmail()).isEqualTo("email");
-                    }
-                }
-
-                @Test
-                @DisplayName("accountDTO를 반환한다")
-                void it_returnsSuccessMessage() {
-                    LocalAccountDTO accountDTO = (LocalAccountDTO) accountService.updateMyInfo(account, request);
-
-                    assertThat(accountDTO.getNickname()).isEqualTo("nickname");
-                    assertThat(accountDTO.getPassword()).isNull();
-                    assertThat(accountDTO.getEmail()).isEqualTo("email");
-                }
-            }
-
-            @Nested
-            @DisplayName("닉네임을 수정하려고 할 때")
-            class Context_whenUpdateNickname {
-                @BeforeEach
-                void setUp() {
-                    request.setNickname("newNickname");
-                }
-            }
+            request = new AccountDTO();
         }
 
         @Nested
-        @DisplayName("Oauth 계정인 경우")
-        class Context_whenOauthAccount {
+        @DisplayName("새로운 닉네임이 request에 주어진다면")
+        class Context_with_new_nickname {
             @BeforeEach
             void setUp() {
-                account = accountRepository.save(OauthAccount.builder()
-                        .oauthId("oauthId")
-                        .platform(oauthPlatformRepository.findByPlatformType(OauthPlatformType.KAKAO))
-                        .nickname("nickname")
-                        .build());
-
-                request = new OauthAccountDTO();
-                request.setType("oauth");
+                newNickname = ag.getTestNickname();
+                request.setNickname(newNickname);
             }
-
-            @Nested
-            @DisplayName("닉네임을 수정하려고 할 때")
-            class Context_whenUpdateNickname {
-                @BeforeEach
-                void setUp() {
-                    request.setNickname("newNickname");
-                }
-
-                @Test
-                @DisplayName("성공 메시지를 반환한다")
-                void it_returnsSuccessMessage() {
-                    OauthAccountDTO accountDTO = (OauthAccountDTO) accountService.updateMyInfo(account, request);
-
-                    assertThat(accountDTO.getNickname()).isEqualTo("newNickname");
-                }
+            @Test
+            @DisplayName("닉네임이 변경된다")
+            void it_updates_nickname() {
+                accountService.updateMyInfo(account, request);
+                assertThat(account.getNickname()).isEqualTo(newNickname);
+            }
+        }
+        @Nested
+        @DisplayName("닉네임이 주어지지 않는다면")
+        class Context_nickname_not_given {
+            @Test
+            @DisplayName("예외가 발생한다.")
+            void it_does_not_update_nickname() {
+                Assertions.assertThrows(AccountException.class, () -> accountService.updateMyInfo(account, request));
             }
         }
     }
