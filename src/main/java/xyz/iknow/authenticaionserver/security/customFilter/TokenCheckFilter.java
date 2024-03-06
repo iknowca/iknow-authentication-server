@@ -35,10 +35,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
             return;
         }
         String token = request.getHeader("Authorization");
-//        if (token == null) {
-//            TokenException e = new TokenException(TokenException.TOKEN_ERROR.NOT_FOUND_TOKEN);
-//            e.sendResponseError(response);
-//        }
+
         Map<String, Object> jwtValueMap;
 
         try {

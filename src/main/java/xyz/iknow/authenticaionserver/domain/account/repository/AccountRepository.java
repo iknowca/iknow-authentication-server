@@ -20,4 +20,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query("SELECT oa.platform FROM OauthAccount oa WHERE oa.id = :accountId")
     OauthPlatform findOauthPlatformByPlatformTypeAndOauthId(Long accountId);
+
+    Optional<LocalAccount> findLocalAccountByEmail(String email);
 }

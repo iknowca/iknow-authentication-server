@@ -17,11 +17,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import xyz.iknow.authenticaionserver.security.customFilter.AccessTokenRefreshFilter;
-import xyz.iknow.authenticaionserver.security.customFilter.LoginFilter;
 import xyz.iknow.authenticaionserver.security.customFilter.TokenCheckFilter;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetailsService;
-import xyz.iknow.authenticaionserver.security.handler.loginHandler.LoginFailureHandler;
-import xyz.iknow.authenticaionserver.security.handler.loginHandler.LoginSuccessHandler;
 import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.utility.jwt.JwtUtility;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenService.TokenService;
@@ -58,9 +55,8 @@ public class SecurityConfig {
         http.formLogin(formLogin -> formLogin.disable());
         http.authenticationManager(buildCustomAuthenticationManager(http));
         http.logout(logout -> logout.disable());
-        http.addFilterBefore(loginFilter(buildCustomAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(accessTokenRefreshFilter(), LoginFilter.class);
+        http.addFilterBefore(accessTokenRefreshFilter(), UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests((authorizeRequests) -> {
             authorizeRequests.requestMatchers(authenticatedPath.toArray(new String[0])).authenticated();
             authorizeRequests.requestMatchers(anonymousPath.toArray(new String[0])).anonymous();
@@ -97,15 +93,6 @@ public class SecurityConfig {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
         return authenticationManagerBuilder.build();
-    }
-
-    @Bean
-    public LoginFilter loginFilter(AuthenticationManager authenticationManager) {
-        LoginFilter loginFilter = new LoginFilter("/account/login");
-        loginFilter.setAuthenticationManager(authenticationManager);
-        loginFilter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtService));
-        loginFilter.setAuthenticationFailureHandler(new LoginFailureHandler());
-        return loginFilter;
     }
 
     @Bean

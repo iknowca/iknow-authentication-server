@@ -18,4 +18,6 @@ public interface AccountService {
     void withdrawAccount(Account account);
 
     AccountDTO changePassword(Account account, LocalAccountDTO request);
+
+    String login(LocalAccountDTO request);
 }

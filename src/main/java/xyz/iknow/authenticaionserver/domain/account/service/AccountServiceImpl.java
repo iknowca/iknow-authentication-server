@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -131,5 +132,34 @@ public class AccountServiceImpl implements AccountService {
         account = accountRepository.save(account);
         LocalAccountDTO localAccountDTO = new LocalAccountDTO((LocalAccount) account);
         return localAccountDTO;
+    }
+
+    @Override
+    public String login(LocalAccountDTO request) {
+        String email = request.getEmail();
+        String password = request.getPassword();
+
+        if (!emailValidator.validate(email)) {
+            throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_ACCOUNT);
+        }
+
+        LocalAccount account = accountRepository.findLocalAccountByEmail(email).orElseThrow(() -> new AccountException(AccountException.ACCOUNT_ERROR.INVALID_ACCOUNT));
+
+        if (!passwordEncoder.matches(password, account.getPassword())) {
+            throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_ACCOUNT);
+        }
+
+        String accessToken = jwtService.generateAccessToken(account);
+        String refreshToken = jwtService.generateRefreshToken(account);
+
+        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpServletResponse response = sra.getResponse();
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setMaxAge(60 * 60 * 24);
+        refreshTokenCookie.setPath("/");
+
+        response.addCookie(refreshTokenCookie);
+        return "Bearer " + accessToken;
     }
 }

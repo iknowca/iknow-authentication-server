@@ -147,4 +147,26 @@ public class AccountResponse {
         openAPI.getComponents().addSchemas("oauthLoginResponse", response);
         return response;
     }
+    @Bean
+    public Schema LoginSuccessResponse() {
+        Schema response = new Schema<Map<String, Object>>()
+                .type("object")
+                .name("oauth login response")
+                .addProperty("data", new StringSchema().example("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImlhdCI6MTYyMzUwNzIwMCwiZXhwIjoxNjIzNTA3MjAwfQ.72J9"))
+                .addProperty("status", new StringSchema().example("success"));
+
+        openAPI.getComponents().addSchemas("LoginSuccessResponse", response);
+        return response;
+    }
+    @Bean
+    public Schema LoginFailureResponse() {
+        Schema response = new Schema<Map<String, Object>>()
+                .type("object")
+                .name("login failure response")
+                .addProperty("message", new StringSchema().example("LOGIN_FAILURE"))
+                .addProperty("status", new StringSchema().example("failure"));
+
+        openAPI.getComponents().addSchemas("LoginFailureResponse", response);
+        return response;
+    }
 }

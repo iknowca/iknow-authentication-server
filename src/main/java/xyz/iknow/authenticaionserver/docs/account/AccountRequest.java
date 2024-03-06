@@ -71,4 +71,17 @@ public class AccountRequest {
         openAPI.getComponents().addSchemas("UpdateAccountPasswordRequest", request);
         return request;
     }
+    @Bean
+    public Schema loginRequest() {
+        Schema request = new Schema<Map<String, Object>>()
+                .type("object")
+                .contentMediaType("application/json")
+                .name("login request")
+                .addProperty("type", new StringSchema().example("local").description("계정 타입"))
+                .addProperty("email", new StringSchema().example("test@email.com").description("이메일"))
+                .addProperty("password", new StringSchema().example("password").description("패스워드"));
+        request.setRequired(List.of("type", "email", "password"));
+        openAPI.getComponents().addSchemas("LoginRequest", request);
+        return request;
+    }
 }

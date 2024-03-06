@@ -130,4 +130,15 @@ public class AccountController {
         accountService.changePassword(account, request);
         return ResponseEntity.ok().body(new MessageResponseBody("passwordChangeSuccessful", "success"));
     }
+    @Operation(summary = "로그인", description = "로그인을 수행합니다.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(ref = "LoginRequest")))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(mediaType = "application/json", schema = @Schema(ref = "LoginSuccessResponse"))),
+            @ApiResponse(responseCode = "401", description = "로그인 실패", content = @Content(mediaType = "application/json", schema = @Schema(ref = "LoginFailureResponse"))),
+    })
+    @PostMapping("/login")
+    public ResponseEntity<MessageResponseBody> login(@RequestBody LocalAccountDTO request) {
+        String accessToken = accountService.login(request);
+        return ResponseEntity.ok().body(new MessageResponseBody(accessToken, "success"));
+    }
 }

@@ -13,6 +13,7 @@ import java.util.Collection;
 @Builder
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
+
     private String username;
     private String password;
     private boolean isEnabled;
