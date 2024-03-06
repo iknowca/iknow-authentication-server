@@ -13,6 +13,7 @@ import java.util.Collection;
 @Builder
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
+
     private String username;
     private String password;
     private boolean isEnabled;
@@ -20,5 +21,4 @@ public class CustomUserDetails implements UserDetails {
     private boolean isAccountNonLocked;
     private boolean isCredentialsNonExpired;
     private Collection<? extends GrantedAuthority> authorities;
-    private Account account;
 }

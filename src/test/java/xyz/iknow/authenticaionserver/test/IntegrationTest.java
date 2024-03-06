@@ -13,13 +13,14 @@ import xyz.iknow.authenticaionserver.domain.account.repository.AccountRepository
 import xyz.iknow.authenticaionserver.domain.account.repository.oauth.OauthPlatformRepository;
 import xyz.iknow.authenticaionserver.domain.account.service.AccountService;
 import xyz.iknow.authenticaionserver.domain.account.service.oauth.OauthAccountService;
+import xyz.iknow.authenticaionserver.initializer.WithContainerTest;
 import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository.AccessTokenRepository;
 import xyz.iknow.authenticaionserver.utility.redis.token.TokenRepository.RefreshTokenRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class IntegrationTest {
+public class IntegrationTest extends WithContainerTest {
     @Autowired
     protected MockMvc mockMvc;
     @Autowired

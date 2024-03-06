@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetails;
 import xyz.iknow.authenticaionserver.security.customUserDetails.CustomUserDetailsService;
 import xyz.iknow.authenticaionserver.security.jwt.exception.TokenException;
 import xyz.iknow.authenticaionserver.security.jwt.service.JwtService;
@@ -35,10 +36,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
             return;
         }
         String token = request.getHeader("Authorization");
-//        if (token == null) {
-//            TokenException e = new TokenException(TokenException.TOKEN_ERROR.NOT_FOUND_TOKEN);
-//            e.sendResponseError(response);
-//        }
+
         Map<String, Object> jwtValueMap;
 
         try {
@@ -55,7 +53,10 @@ public class TokenCheckFilter extends OncePerRequestFilter {
         }
 
         Long accountId = Long.parseLong(jwtValueMap.get("accountId").toString());
-        UserDetails userDetails = customUserDetailsService.loadUserByAccountId(accountId);
+        UserDetails userDetails = CustomUserDetails.builder()
+                .username(accountId.toString())
+                .password(token.substring(7))
+                .build();
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request, response);

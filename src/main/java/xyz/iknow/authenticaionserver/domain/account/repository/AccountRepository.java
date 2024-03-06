@@ -1,7 +1,10 @@
 package xyz.iknow.authenticaionserver.domain.account.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.lang.NonNull;
+import org.springframework.transaction.annotation.Transactional;
 import xyz.iknow.authenticaionserver.domain.account.entity.Account;
 import xyz.iknow.authenticaionserver.domain.account.entity.LocalAccount;
 import xyz.iknow.authenticaionserver.domain.account.entity.oauthAccount.OauthAccount;
@@ -20,4 +23,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query("SELECT oa.platform FROM OauthAccount oa WHERE oa.id = :accountId")
     OauthPlatform findOauthPlatformByPlatformTypeAndOauthId(Long accountId);
+
+    Optional<LocalAccount> findLocalAccountByEmail(String email);
+
+    @Transactional
+    @Modifying
+    @Query("update Account a set a.nickname = ?1 where a.id = ?2")
+    void updateNicknameById(@NonNull String nickname, Long id);
 }

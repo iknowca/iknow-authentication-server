@@ -44,11 +44,11 @@ public class LoginTest extends IntegrationTest {
             void it_success_login() throws Exception {
                 ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/account/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("email", email, "password", password))));
+                        .content(objectMapper.writeValueAsString(Map.of("type", "local", "email", email, "password", password))));
 
                 result.andExpect(status().isOk());
                 result.andExpect(cookie().exists("refreshToken"));
-                result.andExpect(jsonPath("$.accessToken").exists());
+                result.andExpect(jsonPath("$.message").exists());
 
             }
         }
@@ -65,9 +65,9 @@ public class LoginTest extends IntegrationTest {
             void it_returns_password_invalid_error() throws Exception {
                 ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/account/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("email", email, "password", invalidPassword))));
+                        .content(objectMapper.writeValueAsString(Map.of("type", "local", "email", email, "password", invalidPassword))));
 
-                result.andExpect(status().isUnauthorized());
+                result.andExpect(status().isBadRequest());
             }
         }
 
@@ -82,9 +82,9 @@ public class LoginTest extends IntegrationTest {
             void it_returns_email_not_exists_error() throws Exception {
                 ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/account/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("email", invalidEmail, "password", password))));
+                        .content(objectMapper.writeValueAsString(Map.of("type", "local", "email", invalidEmail, "password", password))));
 
-                result.andExpect(status().isUnauthorized());
+                result.andExpect(status().isBadRequest());
             }
         }
     }
