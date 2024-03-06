@@ -9,15 +9,15 @@ public interface AccountService {
 
     void createAccount(LocalAccountDTO request);
 
-    AccountDTO getMyInfo(Account account);
+    AccountDTO getMyInfo(Long accountId);
 
-    AccountDTO updateMyInfo(Account account, AccountDTO request);
+    AccountDTO updateMyInfo(Long accountId, AccountDTO request);
 
-    void logout(Account account);
+    void logout(Long accountId);
 
-    void withdrawAccount(Account account);
+    void withdrawAccount(Long accountId);
 
-    AccountDTO changePassword(Account account, LocalAccountDTO request);
+    AccountDTO changePassword(Long accountId, LocalAccountDTO request);
 
     String login(LocalAccountDTO request);
 }

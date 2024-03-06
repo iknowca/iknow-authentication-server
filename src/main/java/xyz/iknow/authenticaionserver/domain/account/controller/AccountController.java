@@ -67,8 +67,8 @@ public class AccountController {
     })
     @GetMapping
     public ResponseEntity<DTOResponseBody<AccountDTO>> getMyInfo() {
-        Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
-        AccountDTO accountDTO = accountService.getMyInfo(account);
+        Long accountId = Long.parseLong(((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
+        AccountDTO accountDTO = accountService.getMyInfo(accountId);
         return ResponseEntity.ok(new DTOResponseBody<>(accountDTO, "success"));
     }
 
@@ -85,8 +85,8 @@ public class AccountController {
     })
     @PatchMapping
     public ResponseEntity<DTOResponseBody<AccountDTO>> updateMyInfo(@RequestBody AccountDTO request) {
-        Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
-        AccountDTO accountDTO = accountService.updateMyInfo(account, request);
+        Long acocuntId = Long.parseLong(((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
+        AccountDTO accountDTO = accountService.updateMyInfo(acocuntId, request);
         return ResponseEntity.ok(new DTOResponseBody<>(accountDTO, "success"));
     }
 
@@ -99,8 +99,8 @@ public class AccountController {
     })
     @DeleteMapping("/logout")
     public ResponseEntity<MessageResponseBody> logout() {
-        Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
-        accountService.logout(account);
+        Long acocuntId = Long.parseLong(((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
+        accountService.logout(acocuntId);
         return ResponseEntity.ok(new MessageResponseBody("로그아웃 성공", "success"));
     }
 
@@ -113,8 +113,8 @@ public class AccountController {
     })
     @DeleteMapping
     public ResponseEntity<MessageResponseBody> withdrawAccount() {
-        Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
-        accountService.withdrawAccount(account);
+        Long acocuntId = Long.parseLong(((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
+        accountService.withdrawAccount(acocuntId);
         return ResponseEntity.ok().body(new MessageResponseBody("회원 탈퇴 성공", "success"));
     }
     @Operation(summary = "비밀번호 변경", description = "비밀번호 변경을 수행합니다.")
@@ -126,8 +126,8 @@ public class AccountController {
     })
     @PatchMapping("/password")
     public ResponseEntity<MessageResponseBody> changePassword(@RequestBody LocalAccountDTO request) {
-        Account account = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount();
-        accountService.changePassword(account, request);
+        Long acocuntId = Long.parseLong(((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
+        accountService.changePassword(acocuntId, request);
         return ResponseEntity.ok().body(new MessageResponseBody("passwordChangeSuccessful", "success"));
     }
     @Operation(summary = "로그인", description = "로그인을 수행합니다.")

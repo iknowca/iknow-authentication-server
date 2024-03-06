@@ -25,12 +25,13 @@ public class AccountGetMyInfoTest extends UnitTest {
             @BeforeEach
             void setup() {
                 account = LocalAccount.builder().email("email").password("password").nickname("nickname").build();
+                accountRepository.save(account);
             }
 
             @Test
             @DisplayName("Email을 포함함 정보를 반환한다.")
             void It_returnsInfoWithEamil() {
-                LocalAccountDTO accountDTO = (LocalAccountDTO) accountService.getMyInfo(account);
+                LocalAccountDTO accountDTO = (LocalAccountDTO) accountService.getMyInfo(account.getId());
                 assertThat(accountDTO.getEmail()).isEqualTo("email");
                 assertThat(accountDTO.getNickname()).isEqualTo("nickname");
                 assertThat(accountDTO.getPassword()).isNull();

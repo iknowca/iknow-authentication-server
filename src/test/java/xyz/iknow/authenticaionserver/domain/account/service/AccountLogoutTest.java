@@ -43,7 +43,7 @@ public class AccountLogoutTest extends UnitTest {
             @Test
             @DisplayName("redis에서 token이 삭제된다.")
             void it_returns200ok() {
-                accountService.logout(account);
+                accountService.logout(account.getId());
                 assertThat(accessTokenRepository.findById(account.getId()).isPresent()).isFalse();
                 assertThat(refreshTokenRepository.findById(account.getId()).isPresent()).isFalse();
             }

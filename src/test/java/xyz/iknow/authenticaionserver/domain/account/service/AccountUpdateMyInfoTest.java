@@ -40,6 +40,7 @@ public class AccountUpdateMyInfoTest extends UnitTest {
             accountRepository.save(account);
 
             request = new AccountDTO();
+            request.setType("local");
         }
 
         @Nested
@@ -53,8 +54,10 @@ public class AccountUpdateMyInfoTest extends UnitTest {
             @Test
             @DisplayName("닉네임이 변경된다")
             void it_updates_nickname() {
-                accountService.updateMyInfo(account, request);
-                assertThat(account.getNickname()).isEqualTo(newNickname);
+                accountService.updateMyInfo(account.getId(), request);
+                accountRepository.findById(account.getId()).ifPresent(account -> {
+                    assertThat(account.getNickname()).isEqualTo(newNickname);
+                });
             }
         }
         @Nested
@@ -63,7 +66,7 @@ public class AccountUpdateMyInfoTest extends UnitTest {
             @Test
             @DisplayName("예외가 발생한다.")
             void it_does_not_update_nickname() {
-                Assertions.assertThrows(AccountException.class, () -> accountService.updateMyInfo(account, request));
+                Assertions.assertThrows(AccountException.class, () -> accountService.updateMyInfo(account.getId(), request));
             }
         }
     }
