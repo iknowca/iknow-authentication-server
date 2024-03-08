@@ -150,6 +150,9 @@ public class AccountServiceImpl implements AccountService {
         if (!passwordEncoder.matches(password, account.getPassword())) {
             throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_ACCOUNT);
         }
+        if (account.getAccountDetails().getWithDraw()) {
+            throw new AccountException(AccountException.ACCOUNT_ERROR.INVALID_ACCOUNT);
+        }
 
         String accessToken = jwtService.generateAccessToken(account);
         String refreshToken = jwtService.generateRefreshToken(account);
