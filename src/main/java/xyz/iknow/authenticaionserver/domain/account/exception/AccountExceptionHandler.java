@@ -9,6 +9,6 @@ import xyz.iknow.authenticaionserver.utility.response.MessageResponseBody;
 public class AccountExceptionHandler {
     @ExceptionHandler(AccountException.class)
     public ResponseEntity<MessageResponseBody> handler(AccountException e) {
-        return ResponseEntity.badRequest().body(new MessageResponseBody(e.getMessage(), "failure"));
+        return ResponseEntity.status(e.error.getStatus()).body(new MessageResponseBody(e.getMessage(), "failure"));
     }
 }

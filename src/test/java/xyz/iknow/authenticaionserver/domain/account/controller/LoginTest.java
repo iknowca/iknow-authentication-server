@@ -67,7 +67,7 @@ public class LoginTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(Map.of("type", "local", "email", email, "password", invalidPassword))));
 
-                result.andExpect(status().isBadRequest());
+                result.andExpect(status().isUnauthorized());
             }
         }
 
@@ -84,7 +84,7 @@ public class LoginTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(Map.of("type", "local", "email", invalidEmail, "password", password))));
 
-                result.andExpect(status().isBadRequest());
+                result.andExpect(status().isUnauthorized());
             }
         }
     }

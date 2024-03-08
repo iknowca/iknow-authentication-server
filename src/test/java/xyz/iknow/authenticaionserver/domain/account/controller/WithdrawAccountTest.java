@@ -57,8 +57,8 @@ public class WithdrawAccountTest extends IntegrationTest {
                         .header("Authorization", "Bearer " + accessToken));
                 mockMvc.perform(MockMvcRequestBuilders.post("/account/login")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(Map.of("email", email, "password", password))))
-                        .andExpect(status().isBadRequest());
+                                .content(objectMapper.writeValueAsString(Map.of("type","local", "email", email, "password", password))))
+                        .andExpect(status().isUnauthorized());
             }
         }
 
