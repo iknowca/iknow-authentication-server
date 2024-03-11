@@ -133,7 +133,7 @@ public class AccountResponse {
                 .addProperty("data", new StringSchema().example("https://kauth.kakao.com/oauth/authorize?client_id=...&redirect_uri=...&response_type=code"))
                 .addProperty("status", new StringSchema().example("success"));
 
-        openAPI.getComponents().addSchemas("oauthLognUrlResponse", response);
+        openAPI.getComponents().addSchemas("oauthLoginUrlResponse", response);
         return response;
     }
     @Bean
